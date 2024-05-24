@@ -1,0 +1,29 @@
+services:
+  mysql-db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mySqlRootPassword
+      MYSQL_DATABASE: aztemarketDb
+      MYSQL_USER: aztemarketBot
+      MYSQL_PASSWORD: aztemarketBotPassword
+    ports:
+      - "3306:3306"
+  
+  aztemarket:
+    container_name: aztemarket-service
+    depends_on:
+      - mysql-db
+    environment:
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+      DISCORD_APP_ID: ${DISCORD_APP_ID}
+      DB_ROOT_CONNSTRING: ${DB_ROOT_CONNSTRING}
+    build:
+      dockerfile: Dockerfile
+
+networks:
+  default:
+    name: dev_network
+    driver: bridge
+    external: true
