@@ -15,7 +15,7 @@ COPY . ./
 COPY ./.env ./.env
 
 # Build project
-RUN CGO_ENABLED=0 GOOS=linux go build -o build/bot/main ./cmd/main.go 
+RUN CGO_ENABLED=0 GOOS=linux go build -o build/bot/main ./src/main.go 
 
 # Other configs
 VOLUME /app/logs
