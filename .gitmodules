@@ -1,3 +1,4 @@
-[submodule "Infrastructure"]
-	path = Infrastructure
+[submodule "Aztebot-Infrastructure"]
+	branch = main
+	path = Aztebot-Infrastructure
 	url = https://github.com/RazvanBerbece/Aztebot-Infrastructure.git
