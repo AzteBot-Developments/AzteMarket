@@ -1,7 +1,29 @@
+.github/
+.gitignore
+.gitmodules
+.git/
 *.md
+
+cmd/Dockerfile
+docker-compose.yml
+docker-compose.ci.yml
+build/
+*.log
+logs/
+
+tests/
+
+.example.env
 
 Makefile
 
-aztemarket/target/debug/
+local.dbconfig.yml
 
-.example.env
+base64.ci.env.out
+
+*.prod.env
+base64.prod.env.out
+
+.DS_Store
+
+Infrastructure/

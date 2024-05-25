@@ -1,7 +1,24 @@
-FROM rust:latest
+# syntax=docker/dockerfile:1
 
-COPY ./aztemarket ./
+# Base Image
+FROM golang:latest
 
-RUN cargo build --release
+WORKDIR /app
 
-CMD ["./target/release/aztemarket"]
+# Install project dependencies
+RUN apt-get update && apt-get install -y iputils-ping
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy rest of source code files
+COPY . ./
+COPY ./.env ./.env
+
+# Build project
+RUN CGO_ENABLED=0 GOOS=linux go build -o build/bot/main ./cmd/main.go 
+
+# Other configs
+VOLUME /app/logs
+
+# Run the Discord bot service application
+CMD sh -c "./build/bot/main"

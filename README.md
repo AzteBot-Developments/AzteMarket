@@ -1,5 +1,5 @@
 # AzteMarket
-Discord bot application written in Rust that manages the trading of benefits on the AzteMarket.
+Discord bot application written in Go that manages the trading of benefits on the AzteMarket.
 
 # Composing services
 - Core
