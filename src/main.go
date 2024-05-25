@@ -16,7 +16,7 @@ func main() {
 
 	// Configure and launch session with provided bot token from the Discord Developer Portal
 	bot.Configure(botService.Context{
-		GatewayAuthToken: globalConfig.DiscordAztebotToken,
+		GatewayAuthToken: globalConfig.DiscordBotToken,
 	}, consoleLogger)
 
 	defer bot.Disconnect()

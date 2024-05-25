@@ -8,8 +8,8 @@ import (
 
 var _ = godotenv.Load(".env")
 
-var DiscordAztebotToken = os.Getenv("DISCORD_BOT_TOKEN")
-var DiscordAztebotAppId = os.Getenv("DISCORD_APP_ID")
+var DiscordBotToken = os.Getenv("DISCORD_BOT_TOKEN")
+var DiscordBotAppId = os.Getenv("DISCORD_APP_ID")
 
 var DiscordMainGuildId = os.Getenv("DISCORD_MAIN_GUILD_ID")
 
