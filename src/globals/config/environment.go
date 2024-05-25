@@ -13,4 +13,5 @@ var DiscordBotAppId = os.Getenv("DISCORD_APP_ID")
 
 var DiscordMainGuildId = os.Getenv("DISCORD_MAIN_GUILD_ID")
 
-var MySqlRootConnectionString = os.Getenv("DB_ROOT_CONNSTRING") // in MySQL format (i.e. `root_username:root_password@<unix/tcp>(host:port)/db_name`)
+var MySqlAztebotRootConnectionString = os.Getenv("DB_AZTEBOT_ROOT_CONNSTRING") // in MySQL format (i.e. `root_username:root_password@<unix/tcp>(host:port)/db_name`)
+var MySqlAztemarketRootConnectionString = os.Getenv("DB_AZTEMARKET_ROOT_CONNSTRING")

@@ -26,7 +26,7 @@ func (b *DiscordBotApplication) Configure(ctx Context, logger logging.Logger) {
 func (b *DiscordBotApplication) AddEventHandlers(logger logging.Logger, remoteEventHandlers []interface{}) {
 
 	// onMessage, onReady, onUpdate, etc..
-	logger.LogInfo(fmt.Sprintf("Registering %d remote event handlers...\n", len(remoteEventHandlers)))
+	logger.LogInfo(fmt.Sprintf("Registering %d remote event handlers...", len(remoteEventHandlers)))
 	for _, handler := range remoteEventHandlers {
 		b.Session.AddHandler(handler)
 	}
@@ -36,16 +36,9 @@ func (b *DiscordBotApplication) AddEventHandlers(logger logging.Logger, remoteEv
 
 }
 
-func (b *DiscordBotApplication) SetIntents() {
-	b.Session.Identify.Intents = discordgo.IntentsGuildMessages
-}
-
-func (b *DiscordBotApplication) SetPermissions() {
-	b.Session.Identify.Intents = discordgo.PermissionManageMessages |
-		discordgo.PermissionReadMessageHistory |
-		discordgo.PermissionManageServer |
-		discordgo.PermissionManageRoles |
-		discordgo.PermissionManageChannels
+func (b *DiscordBotApplication) SetBotPermissions() {
+	b.Session.Identify.Intents = discordgo.IntentsGuildMessages |
+		discordgo.IntentsMessageContent
 }
 
 func (b *DiscordBotApplication) SetStateTracking() {

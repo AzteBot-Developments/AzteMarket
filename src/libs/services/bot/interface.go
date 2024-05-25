@@ -7,7 +7,6 @@ type BotApplication interface {
 	Connect(logger logging.Logger)
 	Disconnect()
 	AddEventHandlers(remoteEventHandlers []interface{})
-	SetPermissions()
-	SetIntents()
+	SetBotPermissions()
 	SetStateTracking()
 }

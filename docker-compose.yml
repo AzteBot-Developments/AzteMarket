@@ -4,10 +4,10 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: mySqlRootPassword
-      MYSQL_DATABASE: aztemarketDb
-      MYSQL_USER: aztemarketBot
-      MYSQL_PASSWORD: aztemarketBotPassword
+      MYSQL_ROOT_PASSWORD: 6oFqJERp8X0V9RGN0lfhu80lqAx940
+      MYSQL_USER: discordbot
+      MYSQL_DATABASE: aztebotBotDb
+      MYSQL_PASSWORD: b21fCTAkaxI1a20utLhkYsMIB1QING
     ports:
       - "3306:3306"
   
