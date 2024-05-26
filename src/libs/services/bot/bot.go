@@ -7,6 +7,8 @@ import (
 	"syscall"
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/logging"
+	globalRuntime "github.com/RazvanBerbece/AzteMarket/src/globals/runtime"
+	"github.com/RazvanBerbece/AzteMarket/src/libs/models/events"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -17,7 +19,11 @@ type DiscordBotApplication struct {
 func (b *DiscordBotApplication) Configure(ctx Context, logger logging.Logger) {
 	session, err := discordgo.New("Bot " + ctx.GatewayAuthToken)
 	if err != nil {
-		logger.LogError(fmt.Sprintf("Could not create a Discord bot app session: : %v", err))
+		globalRuntime.LogEventsChannel <- events.LogEvent{
+			Logger: globalRuntime.ConsoleLogger,
+			Msg:    fmt.Sprintf("Could not create a Discord bot app session: : %v", err),
+			Type:   "ERROR",
+		}
 		return
 	}
 	b.Session = session
@@ -25,8 +31,13 @@ func (b *DiscordBotApplication) Configure(ctx Context, logger logging.Logger) {
 
 func (b *DiscordBotApplication) AddEventHandlers(logger logging.Logger, remoteEventHandlers []interface{}) {
 
+	globalRuntime.LogEventsChannel <- events.LogEvent{
+		Logger: globalRuntime.ConsoleLogger,
+		Msg:    fmt.Sprintf("Registering %d remote event handlers...", len(remoteEventHandlers)),
+		Type:   "INFO",
+	}
+
 	// onMessage, onReady, onUpdate, etc..
-	logger.LogInfo(fmt.Sprintf("Registering %d remote event handlers...", len(remoteEventHandlers)))
 	for _, handler := range remoteEventHandlers {
 		b.Session.AddHandler(handler)
 	}
@@ -51,12 +62,21 @@ func (b *DiscordBotApplication) Connect(logger logging.Logger) {
 
 	err := b.Session.Open()
 	if err != nil {
-		logger.LogError(fmt.Sprintf("Could not connect the bot to the Discord Gateway: %v", err))
+		globalRuntime.LogEventsChannel <- events.LogEvent{
+			Logger: globalRuntime.ConsoleLogger,
+			Msg:    fmt.Sprintf("Could not connect the bot to the Discord Gateway: %v", err),
+			Type:   "ERROR",
+		}
 		return
 	}
 
+	globalRuntime.LogEventsChannel <- events.LogEvent{
+		Logger: globalRuntime.ConsoleLogger,
+		Msg:    "Discord bot session is now connected !",
+		Type:   "INFO",
+	}
+
 	// wait here until CTRL-C or anther term signal is received
-	go logger.LogInfo("Discord bot session is now connected !")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
