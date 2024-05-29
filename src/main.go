@@ -2,10 +2,10 @@ package main
 
 import (
 	globalConfig "github.com/RazvanBerbece/AzteMarket/src/globals/config"
-	globalRuntime "github.com/RazvanBerbece/AzteMarket/src/globals/runtime"
 	channelEventsHandler "github.com/RazvanBerbece/AzteMarket/src/libs/handlers/channelEvents"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/handlers/remoteEvents"
 	botService "github.com/RazvanBerbece/AzteMarket/src/libs/services/bot"
+	loggerService "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger"
 )
 
 func main() {
@@ -18,18 +18,18 @@ func main() {
 	// Configure and launch session with provided bot token from the Discord Developer Portal
 	bot.Configure(botService.Context{
 		GatewayAuthToken: globalConfig.DiscordBotToken,
-	}, globalRuntime.ConsoleLogger)
+	}, loggerService.NewConsoleLogger())
 
 	// Set intents, permissions and state tracking
 	bot.SetBotPermissions()
 	bot.SetStateTracking()
 
 	// Add event handling
-	bot.AddEventHandlers(globalRuntime.ConsoleLogger, remoteEvents.RemoteEventHandlersAsList())
+	bot.AddEventHandlers(loggerService.NewConsoleLogger(), remoteEvents.RemoteEventHandlersAsList())
 
 	// Connect to Discord Gateway and keep the connection alive
 	// in order to handle receiving and sending remote events
-	bot.Connect(globalRuntime.ConsoleLogger)
+	bot.Connect(loggerService.NewConsoleLogger())
 
 	bot.Disconnect()
 

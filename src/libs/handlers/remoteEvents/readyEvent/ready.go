@@ -15,8 +15,11 @@ func DefaultHandler(s *discordgo.Session, event *discordgo.Ready) {
 
 	log := fmt.Sprintf("`%s` is now online", event.User.Username)
 	globalRuntime.LogEventsChannel <- events.LogEvent{
-		Logger: loggerService.NewDiscordChannelLogger(s,
-			config.GetDiscordChannelIdForTopic("Debug", globalConfig.DiscordChannelTopicPairs), true),
+		Logger: loggerService.NewDiscordChannelLogger(
+			s,
+			config.GetDiscordChannelIdForTopic("Debug", globalConfig.DiscordChannelTopicPairs),
+			true,
+		),
 		Msg:  log,
 		Type: "INFO",
 	}
