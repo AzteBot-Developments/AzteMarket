@@ -26,28 +26,39 @@ jobs:
       - name: Publish release details to Discord Webhook
         run: |
           : # Retrieve details about most current change
-          timestamp="$(date)"
+          head_commit_ts=$(date)
+          changelog="Implented XYZ. Did A, B, C. Improved W.
+          Note: Sample purposes."
+
+          timestamp='`'"$head_commit_ts"'`'
           head_commit_msg="${{ github.event.head_commit.message }}"
-          current_tag="${{ github.ref_name }}"
+          current_tag='`'"${{ github.ref_name }}"'`'
 
-          req_body=$(cat <<EOF
-          {
-            "content": "",
-            "embeds": [
-              {
-                "title": "Aztemarket \\`$current_tag\\` was released!",
-                "description": "$head_commit_msg",
-                "color": 16711680,
-                "fields": [
-                  {
-                    "name": "At",
-                    "value": "\\`$timestamp\\`"
-                  }
-                ]
-              }
-            ]
-          } 
-          EOF
-          )
+          JSON_STRING=$( jq -n \
+                  --arg ct "AzteMarket $current_tag was released!" \
+                  --arg cm "$head_commit_msg" \
+                  --arg ts "$timestamp" \
+                  --arg changelog "$changelog" \
+                  '{
+                        "content": "",
+                        "embeds": [
+                            {
+                            "title": $ct,
+                            "description": $cm,
+                            "color": 2123412,
+                            "fields": [
+                                {
+                                    "name": "Changelog",
+                                    "value": $changelog
+                                },
+                                {
+                                    "name": "Timestamp",
+                                    "value": $ts
+                                }
+                            ]
+                            }
+                        ]
+                    }' 
+            )
 
-          curl -H "Content-Type: application/json" -d "$req_body" ${{ secrets.DISCORD_WEBHOOK_CHANGELOG }}
+          curl -H "Content-Type: application/json" -d "$JSON_STRING" ${{ secrets.DISCORD_WEBHOOK_CHANGELOG }}
