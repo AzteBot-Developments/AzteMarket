@@ -1,0 +1,36 @@
+# # This workflow is ran on all PRs and pushes to main. It builds the project and runs the automated tests.
+# # In the future it could also build and push the containers to the Google Container Registry.
+
+# name: test
+
+# on:
+#   pull_request:
+#   workflow_call:
+
+# jobs:
+
+#   test:
+
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       - name: Setup creds to access private submodules
+#         run: |
+#           git config --global url.https://${{ secrets.GH_TOKEN }}@github.com/.insteadOf https://github.com/
+      
+#       - name: Setup environment
+#         run: |
+#           : # Load submodules
+#           git submodule update --recursive --remote --init
+          
+#           : # Environment variables for CI testing
+#           echo ${{ secrets.CI_ENV_BASE64_STRING }} | base64 --decode > .env
+
+#           : # Docker networks for CI testing
+#           docker network create dev_network
+      
+#       - name: Run CI tests
+#         run: |
+#           make ci

@@ -1,0 +1,29 @@
+# This workflow is ran on all PRs and pushes to main. It builds the project and runs the automated tests.
+# In the future it could also build and push the containers to the Google Container Registry.
+
+name: test
+
+on:
+  push:
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'README.md'
+      - '.gitignore'
+      - '.gitmodules'
+      - 'Makefile'
+    branches: [ 'main' ]
+  workflow_dispatch:
+
+jobs:
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Get release details
+        run: |
+          echo "${{ github.event.head_commit.message }}""
