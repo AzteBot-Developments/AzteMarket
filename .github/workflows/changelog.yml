@@ -35,13 +35,13 @@ jobs:
             "content": "",
             "embeds": [
               {
-                "title": "Aztemarket '"$current_tag"' was released!"
-                "description": "'"$head_commit_msg"'",
+                "title": "Aztemarket $current_tag was released!"
+                "description": "$head_commit_msg",
                 "color": 16711680,
                 "fields": [
                   {
                     "name": "At",
-                    "value": "'"$timestamp"'"
+                    "value": "$timestamp"
                   }
                 ]
               }
@@ -49,5 +49,7 @@ jobs:
           } 
           EOF
           )
+
+          echo $req_body
 
           curl -H "Content-Type: application/json" -d $req_body ${{ secrets.DISCORD_WEBHOOK_CHANGELOG }}
