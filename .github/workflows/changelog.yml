@@ -35,13 +35,13 @@ jobs:
             "content": "",
             "embeds": [
               {
-                "title": "Aztemarket $current_tag was released!",
+                "title": "Aztemarket `$current_tag` was released!",
                 "description": "$head_commit_msg",
                 "color": 16711680,
                 "fields": [
                   {
                     "name": "At",
-                    "value": "$timestamp"
+                    "value": "`$timestamp`"
                   }
                 ]
               }
