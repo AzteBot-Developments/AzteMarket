@@ -33,7 +33,7 @@ jobs:
             "embeds": [
               {
                 "title": "A new version of AzteMarket was released !",
-                "description": "$head_commit_msg",
+                "description": $head_commit_msg,
                 "color": 16711680,
                 "fields": [
                   {
@@ -42,7 +42,7 @@ jobs:
                   },
                   {
                     "name": "At",
-                    "value": "$now"
+                    "value": $now
                   }
                 ]
               }
