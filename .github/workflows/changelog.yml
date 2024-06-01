@@ -26,8 +26,8 @@ jobs:
       - name: Publish release details to Discord Webhook
         run: |
           : # Retrieve details about most current change
-          head_commit_msg="\\\`${{ github.event.head_commit.message }}\\\`"
-          now="\\\`$(date)\\\`"
+          head_commit_msg="${{ github.event.head_commit.message }}"
+          now="$(date)"
 
           curl -H "Content-Type: application/json" -d '{
             "content": "",
