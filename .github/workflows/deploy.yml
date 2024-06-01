@@ -120,5 +120,4 @@ jobs:
     needs: [continuous-deployment]
     uses: ./.github/workflows/changelog.yml
     secrets: inherit
-    runs-on: ubuntu-latest
     if: needs.continuous-deployment.result == 'success'
