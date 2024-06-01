@@ -50,6 +50,4 @@ jobs:
           EOF
           )
 
-          echo $req_body
-
-          curl -H "Content-Type: application/json" -d $req_body ${{ secrets.DISCORD_WEBHOOK_CHANGELOG }}
+          curl -H "Content-Type: application/json" -d "$req_body" ${{ secrets.DISCORD_WEBHOOK_CHANGELOG }}
