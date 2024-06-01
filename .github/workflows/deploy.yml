@@ -1,7 +1,7 @@
 # This workflow is ran only on pushes to main. It builds the project artifact and deploys it to Google Cloud Compute Engine.
 # It also generates releases and tags the commits.
 
-name: deploy
+name: Deploy Golang Application
 
 on:
   push:
@@ -43,13 +43,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Generate next release number
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          dry_run: true
 
       - name: Setup deployment environment
         run: |
@@ -112,17 +105,20 @@ jobs:
         run: |
           kubectl get pods
       
-      - name: Create a new GitHub release
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.tag_version.outputs.changelog }}
-
-  release-changelog:
+      - name: Bump version and push tag
+        id: push-tag
+        uses: anothrNick/github-tag-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          MAJOR_STRING_TOKEN: "major:"
+          MINOR_STRING_TOKEN: "minor:"
+          PATCH_STRING_TOKEN: "patch:"
+          NONE_STRING_TOKEN: "docs:"
+          WITH_V: true
+      
+  release-changelogs:
     needs: [continuous-deployment]
     uses: ./.github/workflows/changelog.yml
     secrets: inherit
+    runs-on: ubuntu-latest
     if: needs.continuous-deployment.result == 'success'
-      
