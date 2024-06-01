@@ -11,7 +11,7 @@ import (
 
 func DbPing(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	// Retrieves the user data as a ping to the DB
+	// Retrieves the author user data as a ping to the DB
 	if m.Content == "dbping" {
 
 		authorUserId := m.Author.ID
@@ -22,7 +22,7 @@ func DbPing(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Read data for user %s from the DB", user.DiscordTag))
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Read data for user `%s` [`%s`] from the DB", user.DiscordTag, user.UserId))
 	}
 
 }
