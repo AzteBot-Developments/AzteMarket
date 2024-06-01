@@ -25,6 +25,7 @@ jobs:
       
       - name: Publish release details to Discord Webhook
         run: |
+          : # Retrieve details about most current change
           head_commit_msg="${{ github.event.head_commit.message }}"
           now=$(date)
 
@@ -33,12 +34,12 @@ jobs:
             "embeds": [
               {
                 "title": "A new version of AzteMarket was released !",
-                "description": "'$head_commit_msg'",
+                "description": "'"$head_commit_msg"'",
                 "color": 16711680,
                 "fields": [
                   {
                     "name": "At",
-                    "value": "'$now;"
+                    "value": "'"$now"'"
                   }
                 ]
               }
