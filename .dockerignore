@@ -15,6 +15,7 @@ build/
 
 Makefile
 local.dbconfig.yml
+testing.sh
 
 .example.env
 
