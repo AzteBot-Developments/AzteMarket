@@ -25,4 +25,28 @@ jobs:
       
       - name: Get release details
         run: |
-          echo "${{ github.event.head_commit.message }}"
+          head_commit_msg="${{ github.event.head_commit.message }}"
+          now=$(date)
+      
+      - name: Publish release details to Discord Webhook
+        run: |
+          curl -H "Content-Type: application/json" -d '{
+            "content": "This is a simple message",
+            "embeds": [
+              {
+                "title": "Embed Title",
+                "description": "This is an embed description",
+                "color": 16711680,
+                "fields": [
+                  {
+                    "name": "Field 1",
+                    "value": "Value 1"
+                  },
+                  {
+                    "name": "Field 2",
+                    "value": "Value 2"
+                  }
+                ]
+              }
+            ]
+          }' ${{ secrets.DISCORD_WEBHOOK_CHANGELOG }}
