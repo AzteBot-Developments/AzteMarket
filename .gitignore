@@ -24,6 +24,7 @@ go.work
 build/
 *.env
 .DS_Store
+testing.sh
 
 # Exceptions from ignore
 !.example.env
