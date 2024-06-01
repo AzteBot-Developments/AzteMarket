@@ -23,19 +23,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Get release details
+      - name: Publish release details to Discord Webhook
         run: |
           head_commit_msg="${{ github.event.head_commit.message }}"
           now=$(date)
-      
-      - name: Publish release details to Discord Webhook
-        run: |
+
           curl -H "Content-Type: application/json" -d '{
-            "content": "This is a simple message",
+            "content": "",
             "embeds": [
               {
-                "title": "Embed Title",
-                "description": "This is an embed description",
+                "title": "A new version of AzteMarket was released !",
+                "description": "$head_commit_msg",
                 "color": 16711680,
                 "fields": [
                   {
@@ -43,8 +41,8 @@ jobs:
                     "value": "Value 1"
                   },
                   {
-                    "name": "Field 2",
-                    "value": "Value 2"
+                    "name": "At",
+                    "value": "$now"
                   }
                 ]
               }
