@@ -30,8 +30,8 @@ jobs:
           head_commit_msg="${{ github.event.head_commit.message }}"
           current_tag="${{ github.ref_name }}"
 
-          changelog_body=$(jq -n --arg timestamp "$now" --arg headMsg "$head_commit_msg" --arg curTag "$current_tag"
-          '{
+          changelog_body=$(jq -n --arg timestamp "$now" --arg headMsg "$head_commit_msg" --arg curTag "$current_tag" '
+          {
             "content": "",
             "embeds": [
               {
