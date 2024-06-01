@@ -26,22 +26,22 @@ jobs:
       - name: Publish release details to Discord Webhook
         run: |
           : # Retrieve details about most current change
-          timestamp="\\\`$(date)\\\`"
+          timestamp="$(date)"
           head_commit_msg="${{ github.event.head_commit.message }}"
-          current_tag="\\\`${{ github.ref_name }}\\\`"
+          current_tag="${{ github.ref_name }}"
 
           req_body=$(cat <<EOF
           {
             "content": "",
             "embeds": [
               {
-                "title": "Aztemarket $current_tag was released!",
+                "title": "Aztemarket \\`$current_tag\\` was released!",
                 "description": "$head_commit_msg",
                 "color": 16711680,
                 "fields": [
                   {
                     "name": "At",
-                    "value": "$timestamp"
+                    "value": "\\`$timestamp\\`"
                   }
                 ]
               }
