@@ -33,13 +33,13 @@ jobs:
             "content": "",
             "embeds": [
               {
-                "title": "AzteMarket `"'"${{  github.ref_name }}"'"` was released !",
+                "title": "AzteMarket "'"`${{  github.ref_name }}`"'" was released !",
                 "description": "'"$head_commit_msg"'",
                 "color": 16711680,
                 "fields": [
                   {
                     "name": "At",
-                    "value": `"'"$now"'"`
+                    "value": "'"`$now`"'"
                   }
                 ]
               }
