@@ -30,11 +30,13 @@ jobs:
           head_commit_msg="${{ github.event.head_commit.message }}"
           current_tag="${{  github.ref_name }}"
 
+          echo $current_tag
+
           curl -H "Content-Type: application/json" -d '{
             "content": "",
             "embeds": [
               {
-                "title": "'"AzteMarket $current_tag was released!"'"
+                "title": "'"AzteMarket was released!"'"
                 "description": "'"$head_commit_msg"'",
                 "color": 16711680,
                 "fields": [
