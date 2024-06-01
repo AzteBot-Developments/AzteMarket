@@ -47,4 +47,6 @@ jobs:
             ]
           }'
 
+          echo $changelog_body
+
           curl -H "Content-Type: application/json" -d changelog_body ${{ secrets.DISCORD_WEBHOOK_CHANGELOG }}
