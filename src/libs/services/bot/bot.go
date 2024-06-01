@@ -7,9 +7,8 @@ import (
 	"syscall"
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/logging"
-	globalRuntime "github.com/RazvanBerbece/AzteMarket/src/globals/runtime"
-	"github.com/RazvanBerbece/AzteMarket/src/libs/models/events"
-	loggerService "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger"
+	logUtils "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger/utils"
+	sharedRuntime "github.com/RazvanBerbece/AzteMarket/src/shared/runtime"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -20,11 +19,7 @@ type DiscordBotApplication struct {
 func (b *DiscordBotApplication) Configure(ctx Context, logger logging.Logger) {
 	session, err := discordgo.New("Bot " + ctx.GatewayAuthToken)
 	if err != nil {
-		globalRuntime.LogEventsChannel <- events.LogEvent{
-			Logger: loggerService.NewConsoleLogger(),
-			Msg:    fmt.Sprintf("Could not create a Discord bot app session: : %v", err),
-			Type:   "ERROR",
-		}
+		go logUtils.PublishConsoleLogErrorEvent(sharedRuntime.LogEventsChannel, fmt.Sprintf("Could not create a Discord bot app session: %v", err))
 		return
 	}
 	b.Session = session
@@ -32,11 +27,7 @@ func (b *DiscordBotApplication) Configure(ctx Context, logger logging.Logger) {
 
 func (b *DiscordBotApplication) AddEventHandlers(logger logging.Logger, remoteEventHandlers []interface{}) {
 
-	globalRuntime.LogEventsChannel <- events.LogEvent{
-		Logger: loggerService.NewConsoleLogger(),
-		Msg:    fmt.Sprintf("Registering %d remote event handlers...", len(remoteEventHandlers)),
-		Type:   "INFO",
-	}
+	go logUtils.PublishConsoleLogInfoEvent(sharedRuntime.LogEventsChannel, fmt.Sprintf("Registering %d remote event handlers...", len(remoteEventHandlers)))
 
 	// onMessage, onReady, onUpdate, etc..
 	for _, handler := range remoteEventHandlers {
@@ -63,19 +54,11 @@ func (b *DiscordBotApplication) Connect(logger logging.Logger) {
 
 	err := b.Session.Open()
 	if err != nil {
-		globalRuntime.LogEventsChannel <- events.LogEvent{
-			Logger: loggerService.NewConsoleLogger(),
-			Msg:    fmt.Sprintf("Could not connect the bot to the Discord Gateway: %v", err),
-			Type:   "ERROR",
-		}
+		go logUtils.PublishConsoleLogErrorEvent(sharedRuntime.LogEventsChannel, fmt.Sprintf("Could not connect the bot to the Discord Gateway: %v", err))
 		return
 	}
 
-	globalRuntime.LogEventsChannel <- events.LogEvent{
-		Logger: loggerService.NewConsoleLogger(),
-		Msg:    "Discord bot session is now connected !",
-		Type:   "INFO",
-	}
+	go logUtils.PublishConsoleLogInfoEvent(sharedRuntime.LogEventsChannel, "Discord bot session is now connected !")
 
 	// wait here until CTRL-C or anther term signal is received
 	sc := make(chan os.Signal, 1)

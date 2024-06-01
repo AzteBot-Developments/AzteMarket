@@ -1,11 +1,11 @@
 package channelEventsHandler
 
 import (
-	globalRuntime "github.com/RazvanBerbece/AzteMarket/src/globals/runtime"
+	sharedRuntime "github.com/RazvanBerbece/AzteMarket/src/shared/runtime"
 )
 
 func HandleLoggerEvents() {
-	for logEvent := range globalRuntime.LogEventsChannel {
+	for logEvent := range sharedRuntime.LogEventsChannel {
 		switch logEvent.Type {
 		case "INFO":
 			go logEvent.Logger.LogInfo(logEvent.Msg)

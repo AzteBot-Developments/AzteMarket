@@ -1,11 +1,11 @@
 package main
 
 import (
-	globalConfig "github.com/RazvanBerbece/AzteMarket/src/globals/config"
-	channelEventsHandler "github.com/RazvanBerbece/AzteMarket/src/libs/handlers/channelEvents"
-	"github.com/RazvanBerbece/AzteMarket/src/libs/handlers/remoteEvents"
+	channelEventsHandler "github.com/RazvanBerbece/AzteMarket/src/handlers/channelEvents"
+	"github.com/RazvanBerbece/AzteMarket/src/handlers/remoteEvents"
 	botService "github.com/RazvanBerbece/AzteMarket/src/libs/services/bot"
-	loggerService "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger"
+	loggerService "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger/strategies"
+	sharedConfig "github.com/RazvanBerbece/AzteMarket/src/shared/config"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 
 	// Configure and launch session with provided bot token from the Discord Developer Portal
 	bot.Configure(botService.Context{
-		GatewayAuthToken: globalConfig.DiscordBotToken,
+		GatewayAuthToken: sharedConfig.DiscordBotToken,
 	}, loggerService.NewConsoleLogger())
 
 	// Set intents, permissions and state tracking

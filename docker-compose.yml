@@ -18,7 +18,6 @@ services:
     environment:
       DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
       DISCORD_APP_ID: ${DISCORD_APP_ID}
-      DB_ROOT_CONNSTRING: ${DB_ROOT_CONNSTRING}
     build:
       dockerfile: Dockerfile
 

@@ -1,4 +1,4 @@
-package globalRuntime
+package sharedRuntime
 
 import "github.com/RazvanBerbece/AzteMarket/src/libs/models/events"
 

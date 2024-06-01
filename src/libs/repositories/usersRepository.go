@@ -6,8 +6,8 @@ import (
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/dax"
 )
 
-type DbUserReader interface {
-	GetUser(userId string) dax.User
+type DbUserRepository interface {
+	GetUser(userId string) (*dax.User, error)
 }
 
 type UserRepository struct {
