@@ -27,6 +27,18 @@ func PublishDiscordLogErrorEvent(logsChannel chan events.LogEvent, s *discordgo.
 	}
 }
 
+func PublishDiscordLogWarnEvent(logsChannel chan events.LogEvent, s *discordgo.Session, topicName string, channelsConfig []string, msg string) {
+	logsChannel <- events.LogEvent{
+		Logger: loggerService.NewDiscordChannelLogger(
+			s,
+			config.GetDiscordChannelIdForTopic(topicName, channelsConfig),
+			true,
+		),
+		Msg:  msg,
+		Type: "WARN",
+	}
+}
+
 func PublishConsoleLogInfoEvent(logsChannel chan events.LogEvent, msg string) {
 	logsChannel <- events.LogEvent{
 		Logger: loggerService.NewConsoleLogger(),

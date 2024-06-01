@@ -2,12 +2,15 @@ package botService
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/logging"
+	"github.com/RazvanBerbece/AzteMarket/src/handlers/slashCmdEvents"
 	logUtils "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger/utils"
+	sharedConfig "github.com/RazvanBerbece/AzteMarket/src/shared/config"
 	sharedRuntime "github.com/RazvanBerbece/AzteMarket/src/shared/runtime"
 	"github.com/bwmarrin/discordgo"
 )
@@ -35,7 +38,19 @@ func (b *DiscordBotApplication) AddEventHandlers(logger logging.Logger, remoteEv
 	}
 
 	// /buy, /trade, /wallet, etc..
-	// TODO
+	if sharedConfig.DiscordMainGuildId != "" {
+		// Register slash commands only for main guild
+		err := slashCmdEvents.CreateAndRegisterSlashEventHandlers(b.Session, true, slashCmdEvents.DefinedSlashCommands)
+		if err != nil {
+			log.Fatal("Error registering slash commands for AzteBot: ", err)
+		}
+	} else {
+		// Register slash commands for all guilds
+		err := slashCmdEvents.CreateAndRegisterSlashEventHandlers(b.Session, false, slashCmdEvents.DefinedSlashCommands)
+		if err != nil {
+			log.Fatal("Error registering slash commands for AzteBot: ", err)
+		}
+	}
 
 }
 
