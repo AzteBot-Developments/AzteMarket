@@ -30,7 +30,7 @@ jobs:
           head_commit_msg="${{ github.event.head_commit.message }}"
           current_tag="${{ github.ref_name }}"
 
-          curl -H "Content-Type: application/json" -d "$(cat <<EOF
+          req_body=$(cat <<EOF
           {
             "content": "",
             "embeds": [
@@ -48,4 +48,6 @@ jobs:
             ]
           } 
           EOF
-          )" ${{ secrets.DISCORD_WEBHOOK_CHANGELOG }}
+          )
+
+          curl -H "Content-Type: application/json" -d "$req_body" ${{ secrets.DISCORD_WEBHOOK_CHANGELOG }}
