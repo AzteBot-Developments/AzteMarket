@@ -6,14 +6,13 @@ name: Release Latest Changelog
 on:
   push:
     paths-ignore:
-      - '.github/**'
+      # - '.github/**'
       - 'docs/**'
       - 'README.md'
       - '.gitignore'
       - '.gitmodules'
       - 'Makefile'
     branches: [ 'main' ]
-  workflow_dispatch:
 
 jobs:
 
@@ -26,4 +25,4 @@ jobs:
       
       - name: Get release details
         run: |
-          echo "${{ github.event.head_commit.message }}""
+          echo "${{ github.event.head_commit.message }}"
