@@ -28,8 +28,8 @@ jobs:
 
           : # Process changelog between current tag and the previous one 
           tags=($(git log --pretty=format:'%h' -n 2))
-          shaCurrent=${output[0]}
-          shaPrevious=${output[1]}
+          shaCurrent=${tags[0]}
+          shaPrevious=${tags[1]}
           changelog=$(git shortlog $shaPrevious..$shaCurrent)
 
           timestamp='`'"$head_commit_ts"'`'
