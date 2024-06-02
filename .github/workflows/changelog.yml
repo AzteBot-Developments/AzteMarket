@@ -30,8 +30,8 @@ jobs:
           tags=($(git log --pretty=format:'%h' -n 2))
           shaCurrent=${tags[0]}
           shaPrevious=${tags[1]}
-          echo $shaCurrent
-          echo $shaPrevious
+          echo "Cur: $shaCurrent"
+          echo "Prev: $shaPrevious"
           changelog="$(git shortlog $shaPrevious..$shaCurrent)"
           echo $changelog
 
