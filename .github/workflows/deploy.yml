@@ -44,6 +44,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Generate next tag
+        id: tag_version
+        uses: anothrNick/github-tag-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          MAJOR_STRING_TOKEN: "major:"
+          MINOR_STRING_TOKEN: "minor:"
+          PATCH_STRING_TOKEN: "patch:"
+          NONE_STRING_TOKEN: "docs:"
+          WITH_V: true
+          DRY_RUN: true
+
       - name: Setup deployment environment
         run: |
           : # Environment variables for AzteMarket
@@ -91,7 +103,7 @@ jobs:
       
       - name: Remove previous deployments
         run: |
-          kubectl delete deployment --ignore-not-found=true aztemarket-service-${{ steps.tag_version.outputs.previous_tag }}
+          kubectl delete deployment --ignore-not-found=true aztemarket-service-${{ steps.tag_version.outputs.tag }}
       
       - name: Create GKE Deployments for new image
         run: |

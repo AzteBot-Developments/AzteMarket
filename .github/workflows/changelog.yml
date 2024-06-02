@@ -16,7 +16,7 @@ jobs:
         run: |
           : # Retrieve details about most current change
           head_commit_ts=$(date)
-          changelog="Implented XYZ. Did A, B, C. Improved W.
+          changelog="Implemented XYZ. Did A, B, C. Improved W.
           Note: Sample purposes."
 
           timestamp='`'"$head_commit_ts"'`'
