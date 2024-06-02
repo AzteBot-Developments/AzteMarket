@@ -19,3 +19,12 @@ func SendSimpleEmbedSlashResponse(s *discordgo.Session, i *discordgo.Interaction
 		},
 	})
 }
+
+func SendEmbedSlashResponse(s *discordgo.Session, i *discordgo.Interaction, embed embed.Embed) {
+	s.InteractionRespond(i, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{embed.MessageEmbed},
+		},
+	})
+}
