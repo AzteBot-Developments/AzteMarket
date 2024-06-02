@@ -122,7 +122,6 @@ jobs:
 
       - name: Release changelog
         uses: ./.github/workflows/changelog.yml
-        secrets: inherit
         with:
           newRelease: ${{ steps.tag_version.outputs.new_tag }}
           previousRelease: ${{ steps.tag_version.outputs.previous_tag }}
