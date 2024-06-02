@@ -30,7 +30,7 @@ jobs:
           tags=($(git log --pretty=format:'%h' -n 2))
           shaCurrent=${tags[0]}
           shaPrevious=${tags[1]}
-          changelog=$(git shortlog $shaPrevious..$shaCurrent)
+          changelog="$(git shortlog $shaPrevious..$shaCurrent)"
 
           timestamp='`'"$head_commit_ts"'`'
           head_commit_msg="$(git log -1 --pretty=format:"%s")"
