@@ -35,6 +35,9 @@ jobs:
     environment: production
     # needs: [continuous-integration]
     runs-on: ubuntu-latest
+    outputs:
+      new-tag: ${{ steps.release-store.outputs.NEW_TAG }}
+      previous-tag: ${{ steps.release-store.outputs.PREV_TAG }}
     # if: needs.continuous-integration.result == 'success'
 
     permissions:
@@ -119,9 +122,17 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+      
+      - name: Store releases for changelog processing
+        id: release-store
+        run: |
+          echo "NEW_TAG=${{ steps.tag_version.outputs.new_tag }}" >> $GITHUB_OUTPUT
+          echo "PREV_TAG=${{ steps.tag_version.outputs.previous_tag }}" >> $GITHUB_OUTPUT
 
-      - name: Release changelog
-        uses: ./.github/workflows/changelog.yml
-        with:
-          newRelease: ${{ steps.tag_version.outputs.new_tag }}
-          previousRelease: ${{ steps.tag_version.outputs.previous_tag }}
+  release-changelog:
+    needs: [continuous-deployment]
+    uses: ./.github/workflows/changelog.yml
+    secrets: inherit
+    with:
+      newRelease: ${{ needs.cd.outputs.new-tag }}
+      previousRelease: ${{ needs.cd.outputs.previous-tag }}
