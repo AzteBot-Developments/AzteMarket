@@ -2,8 +2,6 @@ name: Release Latest Changelog
 
 on:
   workflow_call:
-    tags:
-      - 'v*'
 
 jobs:
 
@@ -13,6 +11,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Get current tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          dry_run: true
       
       - name: Publish release details to Discord Webhook
         run: |
@@ -23,7 +28,7 @@ jobs:
 
           timestamp='`'"$head_commit_ts"'`'
           head_commit_msg="${{ github.event.head_commit.message }}"
-          current_tag='`'"${{ github.ref_name }}""'`'
+          current_tag='`'"${{ steps.tag_version.outputs.tag }}""'`'
 
           JSON_STRING=$( jq -n \
                   --arg ct "AzteMarket $current_tag was released!" \
