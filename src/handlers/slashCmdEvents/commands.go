@@ -10,7 +10,7 @@ import (
 var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 	{
 		Name:        "ping",
-		Description: "Basic ping slash interaction for the AzteBot.",
+		Description: "Basic ping slash interaction for the AzteMarket.",
 	},
 	{
 		Name:        "market",
