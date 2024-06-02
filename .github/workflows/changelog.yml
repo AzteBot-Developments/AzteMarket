@@ -19,24 +19,6 @@ jobs:
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           dry_run: true
-
-      - name: Get latest release information
-        id: recent_commit
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GH_TOKEN }}
-          script: |
-            const { data: commits } = await github.repos.listCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: 'main',
-              per_page: 1
-            });
-            const latestCommit = commits[0];
-            return {
-              commitMessage: latestCommit.commit.message,
-              commitTimestamp: latestCommit.commit.committer.date
-            };
       
       - name: Publish latest release details to Discord Webhook
         run: |
@@ -47,7 +29,7 @@ jobs:
           Note: Sample purposes."
 
           timestamp='`'"$head_commit_ts"'`'
-          head_commit_msg="$commitMessage"
+          head_commit_msg="$(git log -1 --pretty=format:"%s")"
           current_tag='`'"$tag"'`'
 
           JSON_STRING=$( jq -n \
