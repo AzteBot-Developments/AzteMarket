@@ -61,6 +61,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 	"ping":             slashCmdUtilHandlers.HandleSlashPing,
 	"market":           slashCmdMarketHandlers.HandleSlashViewMarket,
+	"market-see-item":  slashCmdMarketHandlers.HandleSlashViewItemOnMarket,
 	"market-add-stock": slashCmdMarketHandlers.HandleSlashAddStock,
 	"wallet":           slashCmdWalletHandlers.HandleSlashWallet,
 }
