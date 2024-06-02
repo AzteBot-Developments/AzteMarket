@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/RazvanBerbece/AzteMarket/src/libs/repositories"
+	marketplaceServices "github.com/RazvanBerbece/AzteMarket/src/libs/services/marketplace"
 	userServices "github.com/RazvanBerbece/AzteMarket/src/libs/services/user"
 )
 
@@ -14,5 +15,10 @@ var MySqlAztemarketRootConnectionString = os.Getenv("DB_AZTEMARKET_ROOT_CONNSTRI
 // Create shared services at runtime to use across the app
 var UserService = userServices.UserService{
 	UsersRepository:   repositories.NewUserRepository(MySqlAztebotRootConnectionString),
+	ConsoleLogChannel: LogEventsChannel,
+}
+
+var MarketplaceService = marketplaceServices.MarketplaceService{
+	StockRepository:   repositories.NewStockRepository(MySqlAztemarketRootConnectionString),
 	ConsoleLogChannel: LogEventsChannel,
 }

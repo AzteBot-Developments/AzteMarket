@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/RazvanBerbece/AzteMarket/pkg/interaction"
 	"github.com/RazvanBerbece/AzteMarket/pkg/utils"
 	logUtils "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger/utils"
 	sharedConfig "github.com/RazvanBerbece/AzteMarket/src/shared/config"
@@ -70,8 +71,8 @@ func UserHasEnoughPermissionsForCommand(s *discordgo.Session,
 	}
 
 	if isHigherStaffCommand {
-		for _, role := range i.Member.Roles {
-			authorDiscordRole, err := s.State.Role(i.GuildID, role)
+		for _, roleId := range i.Member.Roles {
+			authorDiscordRole, err := interaction.GetDiscordRole(s, i.GuildID, roleId)
 			if err != nil {
 				log.Println("Error getting role:", err)
 				return false
@@ -82,8 +83,8 @@ func UserHasEnoughPermissionsForCommand(s *discordgo.Session,
 			}
 		}
 	} else if isStaffCommand {
-		for _, role := range i.Member.Roles {
-			authorDiscordRole, err := s.State.Role(i.GuildID, role)
+		for _, roleId := range i.Member.Roles {
+			authorDiscordRole, err := interaction.GetDiscordRole(s, i.GuildID, roleId)
 			if err != nil {
 				log.Println("Error getting role:", err)
 				return false
