@@ -10,6 +10,7 @@ import (
 type DbStockRepository interface {
 	AddStockItem(stockItemDisplayName string, stockItemDetails string, cost float64) error
 	GetStockItem(stockItemId string) (*dax.StockItem, error)
+	GetAllItems() ([]dax.StockItem, error)
 }
 
 type StockRepository struct {
@@ -73,4 +74,28 @@ func (r StockRepository) AddStockItem(stockItemDisplayName string, stockItemDeta
 
 	return nil
 
+}
+
+func (r StockRepository) GetAllItems() ([]dax.StockItem, error) {
+
+	var items []dax.StockItem
+
+	rows, err := r.DbContext.SqlDb.Query("SELECT * FROM Stock")
+	if err != nil {
+		return nil, fmt.Errorf("an error ocurred while retrieving all items: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item dax.StockItem
+		if err := rows.Scan(&item.Id, &item.DisplayName, &item.Details, &item.Cost); err != nil {
+			return nil, fmt.Errorf("error in Stock GetAll: %v", err)
+		}
+		items = append(items, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error in Stock GetAll: %v", err)
+	}
+
+	return items, nil
 }

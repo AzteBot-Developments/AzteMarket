@@ -36,3 +36,14 @@ func (s MarketplaceService) GetItemFromMarket(itemId string) (*dax.StockItem, er
 
 	return item, err
 }
+
+func (s MarketplaceService) GetAllItemsOnMarket() ([]dax.StockItem, error) {
+
+	items, err := s.StockRepository.GetAllItems()
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return nil, err
+	}
+
+	return items, err
+}
