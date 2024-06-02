@@ -25,8 +25,7 @@ jobs:
           : # Retrieve details about most current change
           head_commit_ts=$(git log -1 --format=%cd)
           tag=${{ steps.tag_version.outputs.previous_tag }}
-          changelog="Implemented XYZ. Did A, B, C. Improved W.
-          Note: Sample purposes."
+          changelog=${{ steps.tag_version.outputs.changelog }}
 
           timestamp='`'"$head_commit_ts"'`'
           head_commit_msg="$(git log -1 --pretty=format:"%s")"
