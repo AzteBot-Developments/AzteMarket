@@ -16,7 +16,7 @@ In order to run the application, a few prerequisites must be met.
 2. Have Docker installed.
 3. Have Make installed.
 4. Have a fully-configured `.env` file saved in the root of the repository. (contact [@RazvanBerbece](https://github.com/RazvanBerbece) for the configuration)
-5. Additionally, for full local development capabilities and to run the database migrations on the development machine, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository (**For example**, the folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders) 
+5. Additionally, for full local development capabilities and to run the database migrations on the development machine, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `AzteMarket` repository (**For example**, the folder `Project` should contain both the `AzteMarket` and the `Aztebot-Infrastructure` repository folders) 
 
 ### Notes
 At the moment, to propagate remote DB changes to the local dev environment, the `Infrastructure` submodule has to be updated manually when there are changes in the remote source (e.g. a new migration file). 
@@ -35,10 +35,10 @@ To bring down all the services, one can do so by running `make down`.
 This project will employ CI/CD through the use of GitHub Actions and Google Cloud. 
 
 ## CI
-Continuous integration is implemented through a workflow script which sets up a containerised service composition containing the Go environment and other dependencies (MySql, etc.) and then runs the internal logic tests on all pull request and pushes to main. The workflow file for the AzteBot CI can be seen in [test.yml](.github/workflows/test.yml).
+Continuous integration is implemented through a workflow script which sets up a containerised service composition containing the Go environment and other dependencies (MySql, etc.) and then runs the internal logic tests on all pull request and pushes to main. The workflow file for the `AzteMarket` CI can be seen in [test.yml](.github/workflows/test.yml).
 
 ## CD
-Continuous deployment is implemented through a workflow script which builds all the project artifacts and uploads them to Google Cloud Artifact Registry on pushes to the main branch. Additionally, a GKE pod is created with the new container image and ultimately executed upstream to run the apps. The workflow file for the AzteBot CD can be seen in [deploy.yml](.github/workflows/deploy.yml).
+Continuous deployment is implemented through a workflow script which builds all the project artifacts and uploads them to Google Cloud Artifact Registry on pushes to the main branch. Additionally, a GKE pod is created with the new container image and ultimately executed upstream to run the apps. The workflow file for the `AzteMarket` CD can be seen in [deploy.yml](.github/workflows/deploy.yml).
 
 Notes:
 - The production environment file is base64 encoded using `make update-envs` and decoded accordingly in the Actions workflows.
