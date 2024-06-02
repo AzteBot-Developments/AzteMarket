@@ -23,7 +23,7 @@ jobs:
       - name: Publish latest release details to Discord Webhook
         run: |
           : # Retrieve details about most current change
-          head_commit_ts=$commitTimestamp
+          head_commit_ts=$(git log -1 --format=%cd)
           tag=${{ steps.tag_version.outputs.previous_tag }}
           changelog="Implemented XYZ. Did A, B, C. Improved W.
           Note: Sample purposes."
