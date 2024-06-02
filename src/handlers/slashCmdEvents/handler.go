@@ -38,7 +38,7 @@ func HandleSlashEvents(s *discordgo.Session) {
 				})
 
 				// Audit execution failure due to missing permissions
-				log := fmt.Sprintf("User `%s` failed to run command `%s` due to lack of permissions", i.Member.User.Username, appData.Name)
+				log := fmt.Sprintf("User `%s` failed to run command `%s` due to lack of permissions (IDs: `%s`)", i.Member.User.Username, appData.Name, i.Member.Roles)
 				go logUtils.PublishDiscordLogWarnEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, log)
 
 				return
