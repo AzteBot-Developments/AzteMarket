@@ -25,7 +25,7 @@ jobs:
         run: |
           : # Retrieve details about most current change
           head_commit_ts=$(git log -1 --format=%cd)
-          tag="${{ steps.tag_version.outputs.previous_tag }}"
+          tag="${{ inputs.newRelease }}"
 
           : # Process changelog between current tag and the previous one 
           : # TODO: Fix this and populate with commit history or something.
