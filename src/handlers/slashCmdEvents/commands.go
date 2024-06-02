@@ -17,6 +17,18 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Open the OTA market to see what benefits are available for buying.",
 	},
 	{
+		Name:        "market-see-item",
+		Description: "Sees details about a certain item currently on sale on the OTA market.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "id",
+				Description: "The id of the stock item to see from the market.",
+				Required:    true,
+			},
+		},
+	},
+	{
 		Name:        "market-add-stock",
 		Description: "Adds a new stock item to sell on the OTA marketplace.",
 		Options: []*discordgo.ApplicationCommandOption{
