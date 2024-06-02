@@ -1,9 +1,14 @@
 name: Release Latest Changelog
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_call:
+    inputs:
+      newRelease:
+        type: string
+        required: true
+      previousRelease:
+        type: string
+        required: true
 
 jobs:
 
@@ -15,20 +20,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
-      
-      - name: Peek next version number
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.1
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          dry_run: true
 
-      - name: Generate changelog
-        id: changelog
-        uses: metcalfc/changelog-generator@v4.3.1
-        with:
-          myToken: ${{ secrets.GH_TOKEN }}
-      
       - name: Publish latest release details to Discord Webhook
         run: |
           : # Retrieve details about most current change
@@ -36,7 +28,9 @@ jobs:
           tag="${{ steps.tag_version.outputs.previous_tag }}"
 
           : # Process changelog between current tag and the previous one 
-          changelog="${{ steps.changelog.outputs.changelog }}"
+          : # TODO: Fix this and populate with commit history or something.
+          changelog=$(git log --pretty=format:"- %s" ${{ inputs.previousRelease }}...${{ inputs.newRelease }})
+          changelog_uri="https://github.com/AzteBot-Developments/AzteMarket/compare/${{ inputs.previousRelease }}...${{ inputs.newRelease }}"
 
           timestamp='`'"$head_commit_ts"'`'
           head_commit_msg="$(git log -1 --pretty=format:"%s")"
@@ -47,6 +41,7 @@ jobs:
                   --arg cm "$head_commit_msg" \
                   --arg ts "$timestamp" \
                   --arg changelog "$changelog" \
+                  --arg changelog_uri "$changelog_uri" \
                   '{
                         "content": "",
                         "embeds": [
@@ -58,6 +53,10 @@ jobs:
                                 {
                                     "name": "Changes",
                                     "value": $changelog
+                                },
+                                {
+                                    "name": "Source Diff",
+                                    "value": $changelog_uri
                                 },
                                 {
                                     "name": "Timestamp",
