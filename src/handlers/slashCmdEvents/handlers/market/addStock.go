@@ -24,16 +24,16 @@ func HandleSlashAddStock(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
 		return
 	}
-	if *val < 0 || *val > +1.7e+308 {
-		interaction.SendErrorEmbedResponse(s, i.Interaction, fmt.Sprintf("Invalid input argument (term: `%s`)", i.ApplicationCommandData().Options[2].Name))
-		return
-	}
 	if len(stockName) <= 0 || len(stockName) > 255 {
 		interaction.SendErrorEmbedResponse(s, i.Interaction, fmt.Sprintf("Invalid input argument (term: `%s`)", i.ApplicationCommandData().Options[0].Name))
 		return
 	}
 	if len(stockDetails) <= 0 || len(stockDetails) > 255 {
 		interaction.SendErrorEmbedResponse(s, i.Interaction, fmt.Sprintf("Invalid input argument (term: `%s`)", i.ApplicationCommandData().Options[1].Name))
+		return
+	}
+	if *val < 0 || *val > +1.7e+308 {
+		interaction.SendErrorEmbedResponse(s, i.Interaction, fmt.Sprintf("Invalid input argument (term: `%s`)", i.ApplicationCommandData().Options[2].Name))
 		return
 	}
 
