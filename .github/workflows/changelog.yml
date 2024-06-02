@@ -1,8 +1,9 @@
 name: Release Latest Changelog
 
 on:
-  workflow_call:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
 
@@ -13,14 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: '2'
+          fetch-depth: '0'
 
-      - name: Get current tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.3.1
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          dry_run: true
+          myToken: ${{ secrets.GH_TOKEN }}
       
       - name: Publish latest release details to Discord Webhook
         run: |
@@ -29,13 +29,7 @@ jobs:
           tag="${{ steps.tag_version.outputs.previous_tag }}"
 
           : # Process changelog between current tag and the previous one 
-          tags=($(git log --pretty=format:'%h' -n 2))
-          shaCurrent=${tags[0]}
-          shaPrevious=${tags[1]}
-          echo "Cur: $shaCurrent"
-          echo "Prev: $shaPrevious"
-          changelog="$(git log --pretty=format:'- %s' $shaPrevious..$shaCurrent)"
-          echo $changelog
+          changelog="${{ steps.changelog.outputs.changelog }}"
 
           timestamp='`'"$head_commit_ts"'`'
           head_commit_msg="$(git log -1 --pretty=format:"%s")"
