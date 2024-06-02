@@ -34,7 +34,7 @@ jobs:
           shaPrevious=${tags[1]}
           echo "Cur: $shaCurrent"
           echo "Prev: $shaPrevious"
-          changelog="$(git shortlog $shaPrevious..$shaCurrent)"
+          changelog="$(git log --pretty=format:'- %s' $shaPrevious..$shaCurrent)"
           echo $changelog
 
           timestamp='`'"$head_commit_ts"'`'
