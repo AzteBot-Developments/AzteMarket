@@ -98,7 +98,7 @@ jobs:
       
       - name: Remove previous deployments
         run: |
-          kubectl delete deployment --ignore-not-found=true aztemarket-service-${{ steps.tag_version.outputs.tag }}
+          kubectl delete deployment --ignore-not-found=true aztemarket-service-${{ steps.tag_version.outputs.previous_tag }}
       
       - name: Create GKE Deployments for new image
         run: |
