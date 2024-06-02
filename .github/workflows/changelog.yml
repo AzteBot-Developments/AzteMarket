@@ -28,7 +28,7 @@ jobs:
 
           timestamp='`'"$head_commit_ts"'`'
           head_commit_msg="${{ github.event.head_commit.message }}"
-          current_tag='`'"${{ steps.tag_version.outputs.tag }}""'`'
+          current_tag='`'"${{ steps.tag_version.outputs.tag }}"'`'
 
           JSON_STRING=$( jq -n \
                   --arg ct "AzteMarket $current_tag was released!" \
