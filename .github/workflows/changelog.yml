@@ -2,6 +2,7 @@ name: Release Latest Changelog
 
 on:
   workflow_call:
+  workflow_dispatch:
 
 jobs:
 
@@ -18,17 +19,35 @@ jobs:
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           dry_run: true
+
+      - name: Get latest release information
+        id: recent_commit
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            const { data: commits } = await github.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: 'main',
+              per_page: 1
+            });
+            const latestCommit = commits[0];
+            return {
+              commitMessage: latestCommit.commit.message,
+              commitTimestamp: latestCommit.commit.committer.date
+            };
       
-      - name: Publish release details to Discord Webhook
+      - name: Publish latest release details to Discord Webhook
         run: |
           : # Retrieve details about most current change
-          head_commit_ts=$(date)
+          head_commit_ts=$commitTimestamp
           tag=${{ steps.tag_version.outputs.previous_tag }}
           changelog="Implemented XYZ. Did A, B, C. Improved W.
           Note: Sample purposes."
 
           timestamp='`'"$head_commit_ts"'`'
-          head_commit_msg="${{ github.event.head_commit.message }}"
+          head_commit_msg="$commitMessage"
           current_tag='`'"$tag"'`'
 
           JSON_STRING=$( jq -n \
@@ -45,7 +64,7 @@ jobs:
                             "color": 2123412,
                             "fields": [
                                 {
-                                    "name": "Changelog",
+                                    "name": "Changes",
                                     "value": $changelog
                                 },
                                 {
