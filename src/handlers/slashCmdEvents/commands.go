@@ -38,7 +38,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "wallet",
-		Description: "Displays a member's wallet status (funds, details, etc.).",
+		Description: "Displays the command's author wallet status (funds, details, etc.).",
 	},
 }
 
