@@ -11,7 +11,7 @@ import (
 
 func CreateAndRegisterSlashEventHandlers(s *discordgo.Session, mainGuildOnly bool, commands []*discordgo.ApplicationCommand) error {
 
-	log := fmt.Sprintf("[STARTUP] Overwriting %d slash commands...", len(commands))
+	log := fmt.Sprintf("[STARTUP] Bulk overwriting %d slash commands...", len(commands))
 	go logUtils.PublishConsoleLogInfoEvent(sharedRuntime.LogEventsChannel, log)
 
 	// Create the code-defined commands in the target guild(s)

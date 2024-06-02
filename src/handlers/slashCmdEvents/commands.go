@@ -13,6 +13,10 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Basic ping slash interaction for the AzteMarket.",
 	},
 	{
+		Name:        "market",
+		Description: "Open the OTA market to see what benefits are available for buying.",
+	},
+	{
 		Name:        "market-add-stock",
 		Description: "Adds a new stock item to sell on the OTA marketplace.",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -44,6 +48,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 
 var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 	"ping":             slashCmdUtilHandlers.HandleSlashPing,
+	"market":           slashCmdMarketHandlers.HandleSlashViewMarket,
 	"market-add-stock": slashCmdMarketHandlers.HandleSlashAddStock,
 	"wallet":           slashCmdWalletHandlers.HandleSlashWallet,
 }

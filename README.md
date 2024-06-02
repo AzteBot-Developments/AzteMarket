@@ -48,6 +48,7 @@ TODO
 
 ### Merge Commit Messages
 **Must** contain one of the commit message types below such that the bump and release strategy works as intended.
+```
 - feat(...): A new feature
 - fix(...): A bug fix
 - docs(...): Documentation only changes
@@ -56,3 +57,4 @@ TODO
 - perf(...): A code change that improves performance
 - test(...): Adding missing or correcting existing tests
 - chore(...): Changes to the build process or auxiliary tools and libraries such as documentation generation
+```
