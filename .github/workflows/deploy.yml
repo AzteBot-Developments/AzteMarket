@@ -134,5 +134,5 @@ jobs:
     uses: ./.github/workflows/changelog.yml
     secrets: inherit
     with:
-      newRelease: ${{ needs.cd.outputs.new-tag }}
-      previousRelease: ${{ needs.cd.outputs.previous-tag }}
+      newRelease: ${{ needs.continuous-deployment.outputs.new-tag }}
+      previousRelease: ${{ needs.continuous-deployment.outputs.previous-tag }}
