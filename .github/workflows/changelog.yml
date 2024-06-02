@@ -20,6 +20,10 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN }}
           dry_run: true
       
+      - name: Fetch changes
+        run: |
+          git fetch --all
+      
       - name: Publish latest release details to Discord Webhook
         run: |
           : # Retrieve details about most current change
