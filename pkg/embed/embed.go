@@ -342,13 +342,13 @@ func GetPaginationActionRowForEmbed(previousPageCustomId string, nextPageCustomI
 
 }
 
-func SimpleEmbed(title string, description string) []*discordgo.MessageEmbed {
+func SimpleEmbed(title string, description string, color int) []*discordgo.MessageEmbed {
 
 	embed := NewEmbed().
 		SetTitle(title).
 		SetDescription(description).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
-		SetColor(000000)
+		SetColor(color)
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
