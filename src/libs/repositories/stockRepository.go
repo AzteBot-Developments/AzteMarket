@@ -8,9 +8,10 @@ import (
 )
 
 type DbStockRepository interface {
-	AddStockItem(stockItemDisplayName string, stockItemDetails string, cost float64) error
+	AddStockItem(stockItemDisplayName string, stockItemDetails string, cost float64, numAvailable int) (*string, error)
 	GetStockItem(stockItemId string) (*dax.StockItem, error)
 	GetAllItems() ([]dax.StockItem, error)
+	DeleteAllItems() (int64, error)
 }
 
 type StockRepository struct {
@@ -34,7 +35,8 @@ func (r StockRepository) GetStockItem(stockItemId string) (*dax.StockItem, error
 	err := row.Scan(&item.Id,
 		&item.DisplayName,
 		&item.Details,
-		&item.Cost)
+		&item.Cost,
+		&item.NumAvailable)
 
 	if err != nil {
 		return nil, fmt.Errorf("an error ocurred while retrieving stock item with ID `%s`", stockItemId)
@@ -44,13 +46,14 @@ func (r StockRepository) GetStockItem(stockItemId string) (*dax.StockItem, error
 
 }
 
-func (r StockRepository) AddStockItem(stockItemDisplayName string, stockItemDetails string, cost float64) error {
+func (r StockRepository) AddStockItem(stockItemDisplayName string, stockItemDetails string, cost float64, numAvailable int) (*string, error) {
 
 	stockItem := &dax.StockItem{
-		Id:          uuid.New().String(),
-		DisplayName: stockItemDisplayName,
-		Details:     stockItemDetails,
-		Cost:        cost,
+		Id:           uuid.New().String(),
+		DisplayName:  stockItemDisplayName,
+		Details:      stockItemDetails,
+		Cost:         cost,
+		NumAvailable: numAvailable,
 	}
 
 	stmt, err := r.DbContext.SqlDb.Prepare(`
@@ -59,20 +62,21 @@ func (r StockRepository) AddStockItem(stockItemDisplayName string, stockItemDeta
 				id, 
 				displayName, 
 				details,
-				cost
+				cost,
+				numAvailable
 			)
-		VALUES(?, ?, ?, ?);`)
+		VALUES(?, ?, ?, ?, ?);`)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(stockItem.Id, stockItem.DisplayName, stockItem.Details, stockItem.Cost)
+	_, err = stmt.Exec(stockItem.Id, stockItem.DisplayName, stockItem.Details, stockItem.Cost, stockItem.NumAvailable)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &stockItem.Id, nil
 
 }
 
@@ -88,7 +92,7 @@ func (r StockRepository) GetAllItems() ([]dax.StockItem, error) {
 
 	for rows.Next() {
 		var item dax.StockItem
-		if err := rows.Scan(&item.Id, &item.DisplayName, &item.Details, &item.Cost); err != nil {
+		if err := rows.Scan(&item.Id, &item.DisplayName, &item.Details, &item.Cost, &item.NumAvailable); err != nil {
 			return nil, fmt.Errorf("error in Stock GetAll: %v", err)
 		}
 		items = append(items, item)
@@ -98,4 +102,21 @@ func (r StockRepository) GetAllItems() ([]dax.StockItem, error) {
 	}
 
 	return items, nil
+}
+
+func (r StockRepository) DeleteAllItems() (int64, error) {
+
+	query := "DELETE FROM Stock;"
+
+	res, err := r.DbContext.SqlDb.Exec(query)
+	if err != nil {
+		return -1, fmt.Errorf("error deleting all items from the Stock table: %w", err)
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return -1, fmt.Errorf("error reading rows affected for DeleteAllItems: %w", err)
+	}
+
+	return rowsAffected, nil
 }

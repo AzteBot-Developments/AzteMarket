@@ -17,6 +17,10 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Open the OTA market to see what benefits are available for buying.",
 	},
 	{
+		Name:        "market-clear",
+		Description: "Restricted command. Resets the OTA market bringing it to its initial state.",
+	},
+	{
 		Name:        "market-see-item",
 		Description: "Sees details about a certain item currently on sale on the OTA market.",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -50,6 +54,12 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 				Description: "The cost in AzteCoins for the new stock item.",
 				Required:    true,
 			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "max-items",
+				Description: "The total amount of items of this kind that can be purchased by the community.",
+				Required:    true,
+			},
 		},
 	},
 	{
@@ -61,6 +71,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 	"ping":             slashCmdUtilHandlers.HandleSlashPing,
 	"market":           slashCmdMarketHandlers.HandleSlashViewMarket,
+	"market-clear":     slashCmdMarketHandlers.HandleSlashClearMarket,
 	"market-see-item":  slashCmdMarketHandlers.HandleSlashViewItemOnMarket,
 	"market-add-stock": slashCmdMarketHandlers.HandleSlashAddStock,
 	"wallet":           slashCmdWalletHandlers.HandleSlashWallet,

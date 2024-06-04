@@ -28,14 +28,14 @@ func HandleSlashViewMarket(s *discordgo.Session, i *discordgo.InteractionCreate)
 
 	embedToSend := embed.NewEmbed().
 		SetAuthor("AzteMarket", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
-		SetDescription("The AzteMarket is an exchange which offers up various benefits for members to buy via AzteCoins.").
+		SetDescription("The AzteMarket is an exchange which offers up various benefits for members to buy via AzteCoins.\nThe items are bought using slash commands and their associated IDs. For example, an ID could look like `5447f4ed-fd03-4e07-8835-1e55362acd33`.").
 		// SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(sharedConfig.EmbedColorCode).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		AddField(fmt.Sprintf("Currently, there are `%d` benefits available to purchase on the AzteMarket.", len(items)), "", false)
 
 	for idx, item := range items {
-		embedToSend.AddField("", fmt.Sprintf("%d. `%s` - `🪙 %.2f` AzteCoins\n[id: `%s`]\nExtra details: `%s`", idx+1, item.DisplayName, item.Cost, item.Id, item.Details), false)
+		embedToSend.AddField("", fmt.Sprintf("%d. `%s` - `🪙 %.2f` AzteCoins\n[id: `%s`]\nAdditional details: `%s`", idx+1, item.DisplayName, item.Cost, item.Id, item.Details), false)
 	}
 
 	paginationRow := embed.GetPaginationActionRowForEmbed(sharedRuntime.PreviousPageOnEmbedEventId, sharedRuntime.NextPageOnEmbedEventId)
