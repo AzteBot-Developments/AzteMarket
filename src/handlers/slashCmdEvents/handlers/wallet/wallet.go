@@ -42,7 +42,7 @@ func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		SetColor(sharedConfig.EmbedColorCode).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		AddField("🧾 ID", fmt.Sprintf("`%s`", wallet.Id), false).
-		AddField("🪙 Available Funds", fmt.Sprintf("`%d` AzteCoins", wallet.Funds), false).
+		AddField("🪙 Available Funds", fmt.Sprintf("`%.2f` AzteCoins", wallet.Funds), false).
 		AddField("🛍️ Inventory", wallet.Inventory, false)
 
 	interaction.SendEmbedSlashResponse(s, i.Interaction, *embedToSend)
