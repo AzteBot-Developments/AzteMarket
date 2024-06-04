@@ -1,6 +1,7 @@
 package slashCmdWalletHandlers
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/embed"
@@ -16,6 +17,14 @@ func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	authorUserId := i.Member.User.ID
 	wallet, err := sharedRuntime.WalletService.GetWalletForUser(authorUserId)
 	if err != nil {
+
+		// wallet doesn't exist, so customise the message
+		if err == sql.ErrNoRows {
+			interaction.SendErrorEmbedResponse(s, i.Interaction, "No wallet was found for your user ID. You can create a new wallet by using the `/wallet-create` slash command.")
+			go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, "User tried to retrieve a non existing wallet entry.")
+			return
+		}
+
 		interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
 		go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
 		return

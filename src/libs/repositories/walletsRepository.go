@@ -70,7 +70,7 @@ func (r WalletsRepository) GetWalletForUser(userId string) (*dax.Wallet, error) 
 		&wallet.Inventory)
 
 	if err != nil {
-		return nil, fmt.Errorf("an error ocurred while retrieving wallet for user with ID `%s`", userId)
+		return nil, err
 	}
 
 	return &wallet, nil
