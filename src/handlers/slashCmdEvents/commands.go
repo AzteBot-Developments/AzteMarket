@@ -66,6 +66,10 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "wallet",
 		Description: "Displays the command's author wallet status (funds, details, etc.).",
 	},
+	{
+		Name:        "wallet-create",
+		Description: "Creates an AzteMarket wallet for the author of the command !",
+	},
 }
 
 var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -75,4 +79,5 @@ var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *di
 	"market-see-item":  slashCmdMarketHandlers.HandleSlashViewItemOnMarket,
 	"market-add-stock": slashCmdMarketHandlers.HandleSlashAddStock,
 	"wallet":           slashCmdWalletHandlers.HandleSlashWallet,
+	"wallet-create":    slashCmdWalletHandlers.HandleSlashCreateWallet,
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/RazvanBerbece/AzteMarket/src/libs/repositories"
 	marketplaceServices "github.com/RazvanBerbece/AzteMarket/src/libs/services/marketplace"
 	userServices "github.com/RazvanBerbece/AzteMarket/src/libs/services/user"
+	walletServices "github.com/RazvanBerbece/AzteMarket/src/libs/services/wallet"
 )
 
 // Connection strings
@@ -20,5 +21,10 @@ var UserService = userServices.UserService{
 
 var MarketplaceService = marketplaceServices.MarketplaceService{
 	StockRepository:   repositories.NewStockRepository(MySqlAztemarketRootConnectionString),
+	ConsoleLogChannel: LogEventsChannel,
+}
+
+var WalletService = walletServices.WalletService{
+	WalletsRepository: repositories.NewWalletsRepository(MySqlAztemarketRootConnectionString),
 	ConsoleLogChannel: LogEventsChannel,
 }

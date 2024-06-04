@@ -1,19 +1,40 @@
 package slashCmdWalletHandlers
 
 import (
+	"fmt"
+
+	"github.com/RazvanBerbece/AzteMarket/pkg/embed"
+	"github.com/RazvanBerbece/AzteMarket/pkg/interaction"
+	logUtils "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger/utils"
+	sharedConfig "github.com/RazvanBerbece/AzteMarket/src/shared/config"
+	sharedRuntime "github.com/RazvanBerbece/AzteMarket/src/shared/runtime"
 	"github.com/bwmarrin/discordgo"
 )
 
 func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	// authorUserId := i.Member.User.ID
-	// wallet, err := sharedRuntime.WalletService.GetWalletForUser(authorUserId)
-	// if err != nil {
-	// 	interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
-	// 	go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
-	// 	return
-	// }
+	authorUserId := i.Member.User.ID
+	wallet, err := sharedRuntime.WalletService.GetWalletForUser(authorUserId)
+	if err != nil {
+		interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
+		go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
+		return
+	}
 
-	// // Final response to interaction
-	// interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, wallet.Funds)
+	user, err := sharedRuntime.UserService.GetUser(authorUserId)
+	if err != nil {
+		interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
+		go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
+		return
+	}
+
+	embedToSend := embed.NewEmbed().
+		SetTitle(fmt.Sprintf("💳	`%s`'s Wallet", user.DiscordTag)).
+		SetColor(sharedConfig.EmbedColorCode).
+		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
+		AddField("🧾 ID", fmt.Sprintf("`%s`", wallet.Id), false).
+		AddField("🪙 Available Funds", fmt.Sprintf("`%d` AzteCoins", wallet.Funds), false).
+		AddField("🛍️ Inventory", wallet.Inventory, false)
+
+	interaction.SendEmbedSlashResponse(s, i.Interaction, *embedToSend)
 }

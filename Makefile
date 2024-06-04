@@ -1,6 +1,7 @@
 # LOCAL DEVELOPMENT UTILITY SHELL APPS
 migrate-up:
 	sql-migrate up -config=local.dbconfig.yml -env="local-aztemarket"
+	sql-migrate up -config=local.dbconfig.yml -env="local-aztebot"
 
 migrate-up-dry:
 	sql-migrate up -config=local.dbconfig.yml -env="local-aztemarket" -dryrun
