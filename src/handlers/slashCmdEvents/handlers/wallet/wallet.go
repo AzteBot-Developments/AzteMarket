@@ -21,7 +21,7 @@ func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		// wallet doesn't exist, so customise the message
 		if err == sql.ErrNoRows {
 			interaction.SendErrorEmbedResponse(s, i.Interaction, "No wallet was found for your user ID. You can create a new wallet by using the `/wallet-create` slash command.")
-			go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, "User tried to retrieve a non existing wallet entry.")
+			go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, fmt.Sprintf("User `%s` tried to retrieve a non existing wallet entry.", authorUserId))
 			return
 		}
 
