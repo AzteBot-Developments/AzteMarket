@@ -10,6 +10,7 @@ import (
 type DbWalletsRepository interface {
 	CreateWalletForUser(userId string) (*dax.Wallet, error)
 	GetWalletForUser(userId string) (*dax.Wallet, error)
+	DeleteWalletForUser(userId string) error
 	// GetWalletById(id string)
 }
 
@@ -74,4 +75,16 @@ func (r WalletsRepository) GetWalletForUser(userId string) (*dax.Wallet, error) 
 
 	return &wallet, nil
 
+}
+
+func (r WalletsRepository) DeleteWalletForUser(userId string) error {
+
+	query := "DELETE FROM Wallets WHERE userId = ?"
+
+	_, err := r.DbContext.SqlDb.Exec(query, userId)
+	if err != nil {
+		return fmt.Errorf("error deleting wallet entry for user: %w", err)
+	}
+
+	return nil
 }

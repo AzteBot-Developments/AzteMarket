@@ -70,6 +70,10 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "wallet-create",
 		Description: "Creates an AzteMarket wallet for the author of the command !",
 	},
+	{
+		Name:        "wallet-delete",
+		Description: "Deletes the command author's AzteMarket wallet.",
+	},
 }
 
 var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -80,4 +84,5 @@ var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *di
 	"market-add-stock": slashCmdMarketHandlers.HandleSlashAddStock,
 	"wallet":           slashCmdWalletHandlers.HandleSlashWallet,
 	"wallet-create":    slashCmdWalletHandlers.HandleSlashCreateWallet,
+	"wallet-delete":    slashCmdWalletHandlers.HandleSlashDeleteWallet,
 }
