@@ -73,7 +73,7 @@ func (s WalletService) SendFunds(session *discordgo.Session, senderUserId string
 	}
 
 	// ensure that receiver has a wallet
-	receiverWallet, err := s.WalletsRepository.GetWallet(receiverWalletId)
+	_, err = s.WalletsRepository.GetWallet(receiverWalletId)
 	if err != nil {
 		return -1, fmt.Errorf("receiver `%s` does not currently own a wallet for the AzteMarket; please ensure that the receiver owns a wallet to send funds to them", receiverWalletId)
 	}
@@ -90,7 +90,7 @@ func (s WalletService) SendFunds(session *discordgo.Session, senderUserId string
 		return -1, err
 	}
 	// update receiver wallet with new funds
-	receiverWallet, err = s.WalletsRepository.GetWallet(receiverWalletId)
+	receiverWallet, err := s.WalletsRepository.GetWallet(receiverWalletId)
 	if err != nil {
 		return -1, fmt.Errorf("receiver `%s` does not currently own a wallet for the AzteMarket; please ensure that the receiver owns a wallet to send funds to them", receiverWalletId)
 	}

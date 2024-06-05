@@ -21,6 +21,7 @@ var UserService = userServices.UserService{
 
 var MarketplaceService = marketplaceServices.MarketplaceService{
 	StockRepository:   repositories.NewStockRepository(MySqlAztemarketRootConnectionString),
+	WalletsRepository: repositories.NewWalletsRepository(MySqlAztemarketRootConnectionString),
 	ConsoleLogChannel: LogEventsChannel,
 }
 

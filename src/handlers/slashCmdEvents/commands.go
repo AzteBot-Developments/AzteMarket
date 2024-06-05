@@ -63,6 +63,18 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 		},
 	},
 	{
+		Name:        "market-buy-item",
+		Description: "Buys an item from the AzteMarket using the funds available in the user's wallet.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "id",
+				Description: "The ID of the item to buy from the market.",
+				Required:    true,
+			},
+		},
+	},
+	{
 		Name:        "wallet",
 		Description: "Displays the command's author wallet status (funds, details, etc.).",
 	},
@@ -100,6 +112,7 @@ var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *di
 	"market-clear":      slashCmdMarketHandlers.HandleSlashClearMarket,
 	"market-see-item":   slashCmdMarketHandlers.HandleSlashViewItemOnMarket,
 	"market-add-stock":  slashCmdMarketHandlers.HandleSlashAddStock,
+	"market-buy-item":   slashCmdMarketHandlers.HandleSlashBuyItem,
 	"wallet":            slashCmdWalletHandlers.HandleSlashWallet,
 	"wallet-create":     slashCmdWalletHandlers.HandleSlashCreateWallet,
 	"wallet-delete":     slashCmdWalletHandlers.HandleSlashDeleteWallet,
