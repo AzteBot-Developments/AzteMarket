@@ -74,16 +74,11 @@ func (s WalletService) SendFunds(senderUserId string, receiverWalletId string, f
 		return -1, fmt.Errorf("receiver `%s` does not currently own a wallet for the AzteMarket; please ensure that the receiver owns a wallet to send funds to them", receiverWalletId)
 	}
 
-	fmt.Println("To send", funds)
-	fmt.Println("Available funds", senderWallet.Funds)
-
 	// Remove funds from sender and update in DB
 	err = s.WalletsRepository.SubtractFundsFromWallet(senderWallet.Id, funds)
 	if err != nil {
 		return -1, err
 	}
-
-	fmt.Println("After subtraction", senderWallet.Funds-funds)
 
 	// Add funds to receiver and update in DB
 	err = s.WalletsRepository.AddFundsToWallet(receiverWalletId, funds)
