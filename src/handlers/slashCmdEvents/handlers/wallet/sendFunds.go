@@ -35,7 +35,7 @@ func HandleSlashSendFundsFromWallet(s *discordgo.Session, i *discordgo.Interacti
 		return
 	}
 
-	updatedFunds, transferError := sharedRuntime.WalletService.SendFunds(authorUserId, receiverWalletId, *fFunds)
+	updatedFunds, transferError := sharedRuntime.WalletService.SendFunds(s, authorUserId, receiverWalletId, *fFunds)
 	if transferError != nil {
 		interaction.SendErrorEmbedResponse(s, i.Interaction, transferError.Error())
 		go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, transferError.Error())
