@@ -81,7 +81,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
 				Name:        "id",
-				Description: "The wallet ID / user to send the funds to.",
+				Description: "The wallet ID to send the funds to.",
 				Required:    true,
 			},
 			{
