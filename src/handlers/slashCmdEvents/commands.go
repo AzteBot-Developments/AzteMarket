@@ -74,15 +74,34 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "wallet-delete",
 		Description: "Deletes the command author's AzteMarket wallet.",
 	},
+	{
+		Name:        "wallet-send-funds",
+		Description: "Sends AzteCoins to another member's wallet.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "id",
+				Description: "The wallet ID / user to send the funds to.",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "funds",
+				Description: "The amount of funds to send. (max. 50000 per transaction)",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"ping":             slashCmdUtilHandlers.HandleSlashPing,
-	"market":           slashCmdMarketHandlers.HandleSlashViewMarket,
-	"market-clear":     slashCmdMarketHandlers.HandleSlashClearMarket,
-	"market-see-item":  slashCmdMarketHandlers.HandleSlashViewItemOnMarket,
-	"market-add-stock": slashCmdMarketHandlers.HandleSlashAddStock,
-	"wallet":           slashCmdWalletHandlers.HandleSlashWallet,
-	"wallet-create":    slashCmdWalletHandlers.HandleSlashCreateWallet,
-	"wallet-delete":    slashCmdWalletHandlers.HandleSlashDeleteWallet,
+	"ping":              slashCmdUtilHandlers.HandleSlashPing,
+	"market":            slashCmdMarketHandlers.HandleSlashViewMarket,
+	"market-clear":      slashCmdMarketHandlers.HandleSlashClearMarket,
+	"market-see-item":   slashCmdMarketHandlers.HandleSlashViewItemOnMarket,
+	"market-add-stock":  slashCmdMarketHandlers.HandleSlashAddStock,
+	"wallet":            slashCmdWalletHandlers.HandleSlashWallet,
+	"wallet-create":     slashCmdWalletHandlers.HandleSlashCreateWallet,
+	"wallet-delete":     slashCmdWalletHandlers.HandleSlashDeleteWallet,
+	"wallet-send-funds": slashCmdWalletHandlers.HandleSlashSendFundsFromWallet,
 }

@@ -33,7 +33,7 @@ func HandleSlashViewItemOnMarket(s *discordgo.Session, i *discordgo.InteractionC
 		SetColor(sharedConfig.EmbedColorCode).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		AddField("Available to Buy", fmt.Sprintf("`%d` units", item.NumAvailable), false).
-		AddField("Cost", fmt.Sprintf("`%.2f` AzteCoins", item.Cost), false)
+		AddField("Cost", fmt.Sprintf("`🪙 %.2f` AzteCoins", item.Cost), false)
 
 	interaction.SendEmbedSlashResponse(s, i.Interaction, *embedToSend)
 
