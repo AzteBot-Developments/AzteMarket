@@ -27,7 +27,7 @@ func HandleSlashViewItemOnMarket(s *discordgo.Session, i *discordgo.InteractionC
 	}
 
 	embedToSend := embed.NewEmbed().
-		SetAuthor("AzteMarket", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+		SetAuthor("AzteMarket Item", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle(fmt.Sprintf("💷    `%s` (id: `%s`)", item.DisplayName, item.Id)).
 		SetDescription(item.Details).
 		SetColor(sharedConfig.EmbedColorCode).
