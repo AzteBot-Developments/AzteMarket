@@ -12,6 +12,7 @@ type DbStockRepository interface {
 	GetStockItem(stockItemId string) (*dax.StockItem, error)
 	GetAllItems() ([]dax.StockItem, error)
 	DeleteAllItems() (int64, error)
+	DecrementAvailableForItem(stockItemId string) error
 }
 
 type StockRepository struct {
@@ -119,4 +120,23 @@ func (r StockRepository) DeleteAllItems() (int64, error) {
 	}
 
 	return rowsAffected, nil
+}
+
+func (r StockRepository) DecrementAvailableForItem(stockItemId string) error {
+
+	stmt, err := r.DbContext.SqlDb.Prepare(`
+	UPDATE Stock SET 
+		numAvailable = numAvailable - 1
+	WHERE id = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(stockItemId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -12,7 +12,7 @@ func HandleSlashClearMarket(s *discordgo.Session, i *discordgo.InteractionCreate
 
 	deletedCount, err := sharedRuntime.MarketplaceService.ClearMarket()
 	if err != nil {
-		interaction.ErrorEmbedResponseEdit(s, i.Interaction, err.Error())
+		interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
 		return
 	}
 

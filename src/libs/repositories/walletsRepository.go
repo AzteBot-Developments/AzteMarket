@@ -15,6 +15,8 @@ type DbWalletsRepository interface {
 	GetWalletIdForUser(userId string) (*string, error)
 	AddFundsToWallet(id string, funds float64) error
 	SubtractFundsFromWallet(id string, funds float64) error
+	AddItemToWallet(id string, itemId string) error
+	RemoveItemFromWallet(id string, itemId string) error
 	// GetWalletById(id string)
 }
 
@@ -164,4 +166,55 @@ func (r WalletsRepository) SubtractFundsFromWallet(id string, funds float64) err
 	}
 
 	return nil
+}
+
+func (r WalletsRepository) GetWalletInventory(id string) (string, error) {
+
+	query := "SELECT inventory FROM Wallets WHERE id = ?"
+	row := r.DbContext.SqlDb.QueryRow(query, id)
+
+	var inventoryString string
+	err := row.Scan(&inventoryString)
+
+	if err != nil {
+		return "", err
+	}
+
+	return inventoryString, nil
+
+}
+
+func (r WalletsRepository) AddItemToWallet(id string, itemId string) error {
+
+	// Get current inventory state
+	inventory, err := r.GetWalletInventory(id)
+	if err != nil {
+		return err
+	}
+
+	// Append new item ID in-memory
+	inventory += fmt.Sprintf("%s,", itemId)
+
+	// Set upstream
+	stmt, err := r.DbContext.SqlDb.Prepare(`
+			UPDATE Wallets SET 
+				inventory = ?
+			WHERE id = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(inventory, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r WalletsRepository) RemoveItemFromWallet(id string, itemId string) error {
+
+	return fmt.Errorf("not supported yet")
+
 }

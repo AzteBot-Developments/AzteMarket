@@ -3,6 +3,7 @@ package slashCmdWalletHandlers
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/embed"
 	"github.com/RazvanBerbece/AzteMarket/pkg/interaction"
@@ -37,13 +38,33 @@ func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
+	// Build the inventory subcomponent to show in the embed
+	// Holds all available item names in a bullet point list
+	var inventoryDisplay string = ""
+	inventoryString := wallet.Inventory
+	itemIds := strings.Split(inventoryString, ",")
+	for _, id := range itemIds {
+		if len(id) == 0 {
+			continue
+		}
+		item, err := sharedRuntime.MarketplaceService.GetItemFromMarket(id)
+		if err != nil {
+			interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
+			go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
+			continue
+		}
+		inventoryDisplay += fmt.Sprintf("- `%s` (worth `🪙 %.2f`)\n", item.DisplayName, item.Cost)
+	}
+
 	embedToSend := embed.NewEmbed().
 		SetTitle(fmt.Sprintf("💳	`%s`'s Wallet", user.DiscordTag)).
 		SetColor(sharedConfig.EmbedColorCode).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
+		AddLineBreakField().
 		AddField("🧾 ID", fmt.Sprintf("`%s`", wallet.Id), false).
 		AddField("🪙 Available Funds", fmt.Sprintf("`%.2f` AzteCoins", wallet.Funds), false).
-		AddField("🛍️ Inventory", wallet.Inventory, false)
+		AddLineBreakField().
+		AddField("🛍️ Inventory", inventoryDisplay, false)
 
 	interaction.SendEmbedSlashResponse(s, i.Interaction, *embedToSend)
 }

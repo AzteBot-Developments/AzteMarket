@@ -2,6 +2,7 @@ package marketplaceServices
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/dax"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/events"
@@ -82,19 +83,46 @@ func (s MarketplaceService) BuyItem(buyerUserId string, itemId string) error {
 	}
 
 	// Ensure that user has enough funds to buy the item
-	threshold := 0.005
-	if buyerWallet.Funds < item.Cost+threshold {
+	tax := 0.005
+	if buyerWallet.Funds < item.Cost+tax {
 		return fmt.Errorf("cannot buy item `%s` because the buyer's wallet doesn't have enough available funds (available: `%.2f`)", itemId, buyerWallet.Funds)
 	}
 
+	// Only allow a maximum of items of the same ID / name in one's wallet at all times
+	threshold := 2
+	inventoryString := buyerWallet.Inventory
+	itemIds := strings.Split(inventoryString, ",")
+	itemCount := 0
+	for _, id := range itemIds {
+		if id == itemId {
+			itemCount += 1
+		}
+	}
+	if itemCount > threshold {
+		return fmt.Errorf("cannot buy item `%s` because the buyer's wallet has reached the limit of items of this type", itemId)
+	}
+
+	// Subtract funds
+	// TODO: Could send to server wallet instead ? If I ever get around to doing a server wallet and ICOs
+	err = s.WalletsRepository.SubtractFundsFromWallet(buyerWallet.Id, item.Cost)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return err
+	}
+
 	// Add item ID to user's inventory
-	// TODO
+	err = s.WalletsRepository.AddItemToWallet(buyerWallet.Id, item.Id)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return err
+	}
 
-	// Decrement num of available items on the market
-	// TODO
-
-	// Audit
-	// TODO
+	// Decrement num of available units of this item on the market
+	err = s.StockRepository.DecrementAvailableForItem(item.Id)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return err
+	}
 
 	return nil
 
