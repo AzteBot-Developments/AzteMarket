@@ -42,8 +42,15 @@ func HandleSlashSendFundsFromWallet(s *discordgo.Session, i *discordgo.Interacti
 		return
 	}
 
+	senderWallet, err := sharedRuntime.WalletService.GetWalletForUser(authorUserId)
+	if err != nil {
+		interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
+		go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
+		return
+	}
+
 	// Audit transfer in the ledger
-	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Ledger", sharedConfig.DiscordChannelTopicPairs, fmt.Sprintf("`%s` sent `🪙 %.2f` AzteCoins to wallet `%s`", authorUserId, *fFunds, receiverWalletId))
+	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Ledger", sharedConfig.DiscordChannelTopicPairs, fmt.Sprintf("`%s` sent `🪙 %.2f` AzteCoins to wallet `%s`", senderWallet.Id, *fFunds, receiverWalletId))
 
 	interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Successfully transferred `%.2f` AzteCoins to `%s`. Your new balance is `🪙 %.2f` AzteCoins.", *fFunds, receiverWalletId, updatedFunds))
 }
