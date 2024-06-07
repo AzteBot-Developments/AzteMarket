@@ -42,11 +42,11 @@ func HandleSlashBuyItem(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	// Audit market update
-	marketLog := fmt.Sprintf("`%s` was bought on the AzteMarket by `%s` for `🪙 %.2f` AzteCoins", item.DisplayName, buyerId, item.Cost)
+	marketLog := fmt.Sprintf("`%s` was bought on the AzteMarket by `%s` (`%s`) for `🪙 %.2f` AzteCoins", item.DisplayName, i.Member.User.Username, buyerId, item.Cost)
 	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, marketLog)
 
 	// Audit ledger update for the coin transfer
-	ledgerLog := fmt.Sprintf("`%s` (`%s`) bought item `%s` [`%s`] for `🪙 %.2f` AzteCoins", buyerWallet.Id, i.Member.User.Username, item.DisplayName, item.Id, item.Cost)
+	ledgerLog := fmt.Sprintf("`%s` bought item `%s` [`%s`] for `🪙 %.2f` AzteCoins", buyerWallet.Id, item.DisplayName, item.Id, item.Cost)
 	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Ledger", sharedConfig.DiscordChannelTopicPairs, ledgerLog)
 
 	// Final response to interaction

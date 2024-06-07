@@ -26,16 +26,24 @@ func HandleSlashViewMarket(s *discordgo.Session, i *discordgo.InteractionCreate)
 		return
 	}
 
+	// Retrieve the current command id for the buy interaction
+	// so AzteMarket can make it into a clickable command in the response embed
+	cmdId, err := interaction.GetCommandId(s, sharedConfig.DiscordBotAppId, sharedConfig.DiscordMainGuildId, "market-buy-item")
+	if err != nil {
+		interaction.ErrorEmbedResponseEdit(s, i.Interaction, err.Error())
+		return
+	}
+
 	embedToSend := embed.NewEmbed().
 		SetAuthor("AzteMarket", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
-		SetDescription("The AzteMarket is an exchange which offers up various benefits for members to buy via AzteCoins.\nThe items are bought using slash commands and their associated IDs. For example, an ID could look like `5447f4ed-fd03-4e07-8835-1e55362acd33`.").
+		SetDescription("The AzteMarket is an exchange which offers up various benefits for members to buy via AzteCoins.\nThe items are bought using slash commands and their associated IDs.").
 		// SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(sharedConfig.EmbedColorCode).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		AddField(fmt.Sprintf("Currently, there are `%d` benefits available to purchase on the AzteMarket.", len(items)), "", false)
 
 	for idx, item := range items {
-		embedToSend.AddField("", fmt.Sprintf("%d. `%s` - `🪙 %.2f` AzteCoins (Available: `%d`)\nAdditional details: `%s`\nTo buy: `/market-buy-item %s`", idx+1, item.DisplayName, item.Cost, item.NumAvailable, item.Details, item.Id), false)
+		embedToSend.AddField("", fmt.Sprintf("%d. `%s` - `🪙 %.2f` AzteCoins (Available: `%d`)\nAdditional details: `%s`\nTo buy: </market-buy-item:%s> `%s`", idx+1, item.DisplayName, item.Cost, item.NumAvailable, item.Details, cmdId, item.Id), false)
 	}
 
 	paginationRow := embed.GetPaginationActionRowForEmbed(sharedRuntime.PreviousPageOnEmbedEventId, sharedRuntime.NextPageOnEmbedEventId)
