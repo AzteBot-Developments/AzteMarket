@@ -7,6 +7,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Command tuning and validation
+var ItemNameMinLength = 5
+var ItemNameMaxLength = 128
+
 var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 	{
 		Name:        "ping",
@@ -104,6 +108,26 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "wallet-use-item",
+		Description: "Uses an item from the owner's wallet and removes it from their inventory.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "id",
+				Description: "The wallet ID from which to use the item.",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "item-name",
+				Description: "The name of the item to use from the target wallet",
+				Required:    true,
+				MinLength:   &ItemNameMinLength,
+				MaxLength:   ItemNameMaxLength,
+			},
+		},
+	},
 }
 
 var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -117,4 +141,5 @@ var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *di
 	"wallet-create":     slashCmdWalletHandlers.HandleSlashCreateWallet,
 	"wallet-delete":     slashCmdWalletHandlers.HandleSlashDeleteWallet,
 	"wallet-send-funds": slashCmdWalletHandlers.HandleSlashSendFundsFromWallet,
+	"wallet-use-item":   slashCmdWalletHandlers.HandleSlashUseItemFromWallet,
 }

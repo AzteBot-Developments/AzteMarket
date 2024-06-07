@@ -27,5 +27,6 @@ var MarketplaceService = marketplaceServices.MarketplaceService{
 
 var WalletService = walletServices.WalletService{
 	WalletsRepository: repositories.NewWalletsRepository(MySqlAztemarketRootConnectionString),
+	StockRepository:   repositories.NewStockRepository(MySqlAztemarketRootConnectionString),
 	ConsoleLogChannel: LogEventsChannel,
 }

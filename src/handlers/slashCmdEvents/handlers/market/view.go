@@ -26,6 +26,14 @@ func HandleSlashViewMarket(s *discordgo.Session, i *discordgo.InteractionCreate)
 		return
 	}
 
+	// Only count a benefit as available when it's in stock
+	var availableBenefitsCount int = 0
+	for _, item := range items {
+		if item.NumAvailable > 0 {
+			availableBenefitsCount += 1
+		}
+	}
+
 	// Retrieve the current command id for the buy interaction
 	// so AzteMarket can make it into a clickable command in the response embed
 	cmdId, err := interaction.GetCommandId(s, sharedConfig.DiscordBotAppId, sharedConfig.DiscordMainGuildId, "market-buy-item")
@@ -40,7 +48,7 @@ func HandleSlashViewMarket(s *discordgo.Session, i *discordgo.InteractionCreate)
 		// SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(sharedConfig.EmbedColorCode).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
-		AddField(fmt.Sprintf("Currently, there are `%d` benefits available to purchase on the AzteMarket.", len(items)), "", false)
+		AddField(fmt.Sprintf("Currently, there are `%d` benefits available to purchase on the AzteMarket.", availableBenefitsCount), "", false)
 
 	for idx, item := range items {
 		embedToSend.AddField("", fmt.Sprintf("%d. `%s` - `🪙 %.2f` AzteCoins (Available: `%d`)\nAdditional details: `%s`\nTo buy: </market-buy-item:%s> `%s`", idx+1, item.DisplayName, item.Cost, item.NumAvailable, item.Details, cmdId, item.Id), false)

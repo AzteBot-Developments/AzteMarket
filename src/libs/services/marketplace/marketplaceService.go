@@ -41,6 +41,17 @@ func (s MarketplaceService) GetItemFromMarket(itemId string) (*dax.StockItem, er
 	return item, nil
 }
 
+func (s MarketplaceService) GetItemFromMarketByName(itemName string) (*dax.StockItem, error) {
+
+	item, err := s.StockRepository.GetStockItemByName(itemName)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return nil, err
+	}
+
+	return item, nil
+}
+
 func (s MarketplaceService) GetAllItemsOnMarket() ([]dax.StockItem, error) {
 
 	items, err := s.StockRepository.GetAllItems()

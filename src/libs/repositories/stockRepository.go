@@ -10,6 +10,7 @@ import (
 type DbStockRepository interface {
 	AddStockItem(stockItemDisplayName string, stockItemDetails string, cost float64, numAvailable int) (*string, error)
 	GetStockItem(stockItemId string) (*dax.StockItem, error)
+	GetStockItemByName(stockItemName string) (*dax.StockItem, error)
 	GetAllItems() ([]dax.StockItem, error)
 	DeleteAllItems() (int64, error)
 	DecrementAvailableForItem(stockItemId string) error
@@ -41,6 +42,26 @@ func (r StockRepository) GetStockItem(stockItemId string) (*dax.StockItem, error
 
 	if err != nil {
 		return nil, fmt.Errorf("an error ocurred while retrieving stock item with ID `%s`", stockItemId)
+	}
+
+	return &item, nil
+
+}
+
+func (r StockRepository) GetStockItemByName(stockItemName string) (*dax.StockItem, error) {
+
+	query := "SELECT * FROM Stock WHERE displayName = ?"
+	row := r.DbContext.SqlDb.QueryRow(query, stockItemName)
+
+	var item dax.StockItem
+	err := row.Scan(&item.Id,
+		&item.DisplayName,
+		&item.Details,
+		&item.Cost,
+		&item.NumAvailable)
+
+	if err != nil {
+		return nil, fmt.Errorf("an error ocurred while retrieving stock item with name `%s`", stockItemName)
 	}
 
 	return &item, nil

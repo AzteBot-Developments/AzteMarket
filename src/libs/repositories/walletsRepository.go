@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/utils"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/dax"
@@ -17,7 +18,6 @@ type DbWalletsRepository interface {
 	SubtractFundsFromWallet(id string, funds float64) error
 	AddItemToWallet(id string, itemId string) error
 	RemoveItemFromWallet(id string, itemId string) error
-	// GetWalletById(id string)
 }
 
 type WalletsRepository struct {
@@ -215,6 +215,47 @@ func (r WalletsRepository) AddItemToWallet(id string, itemId string) error {
 
 func (r WalletsRepository) RemoveItemFromWallet(id string, itemId string) error {
 
-	return fmt.Errorf("not supported yet")
+	// Get current inventory state
+	inventory, err := r.GetWalletInventory(id)
+	if err != nil {
+		return err
+	}
+
+	var updatedInventory string = ""
+
+	// Remove first ocurrence of the itemId from the provided wallet in-memory
+	inventoryString := inventory
+	ownedItemIds := strings.Split(inventoryString, ",")
+	usedItemCount := 0
+	for _, id := range ownedItemIds {
+		if id != itemId {
+			updatedInventory += fmt.Sprintf("%s,", id)
+		} else if id == itemId {
+			if usedItemCount >= 1 {
+				// don't use further items of the same type, so add them to the updated inventory
+				updatedInventory += fmt.Sprintf("%s,", id)
+			} else {
+				// count as used and don't add to updated inventory
+				usedItemCount++
+			}
+		}
+	}
+
+	// And then set upstream
+	stmt, err := r.DbContext.SqlDb.Prepare(`
+				UPDATE Wallets SET 
+					inventory = ?
+				WHERE id = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(updatedInventory, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 
 }

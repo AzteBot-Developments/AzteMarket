@@ -2,9 +2,11 @@ package walletServices
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/dm"
 	"github.com/RazvanBerbece/AzteMarket/pkg/embed"
+	"github.com/RazvanBerbece/AzteMarket/pkg/utils"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/dax"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/events"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/repositories"
@@ -16,6 +18,7 @@ import (
 type WalletService struct {
 	// repos
 	WalletsRepository repositories.DbWalletsRepository
+	StockRepository   repositories.DbStockRepository
 	// log channels
 	ConsoleLogChannel chan events.LogEvent
 }
@@ -23,6 +26,18 @@ type WalletService struct {
 func (s WalletService) CreateWalletForUser(userId string) (*dax.Wallet, error) {
 
 	wallet, err := s.WalletsRepository.CreateWalletForUser(userId)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return nil, err
+	}
+
+	return wallet, nil
+
+}
+
+func (s WalletService) GetWallet(id string) (*dax.Wallet, error) {
+
+	wallet, err := s.WalletsRepository.GetWallet(id)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
 		return nil, err
@@ -107,4 +122,32 @@ func (s WalletService) SendFunds(session *discordgo.Session, senderUserId string
 	go dm.DmEmbedUser(session, receiverWallet.UserId, *announcement.MessageEmbed)
 
 	return senderWallet.Funds - funds, nil
+}
+
+func (s WalletService) ConsumeItemForUser(userName string, walletId string, itemId string) error {
+
+	wallet, err := s.WalletsRepository.GetWallet(walletId)
+	if err != nil {
+		return err
+	}
+
+	item, err := s.StockRepository.GetStockItem(itemId)
+	if err != nil {
+		return err
+	}
+
+	// Ensure that member actually owns the item
+	inventoryString := wallet.Inventory
+	ownedItemIds := strings.Split(inventoryString, ",")
+	if !utils.StringInSlice(itemId, ownedItemIds) {
+		return fmt.Errorf("wallet for user `%s` [`%s`] doesn't own the target item to consume (`%s` [`%s`])", userName, wallet.Id, item.DisplayName, itemId)
+	}
+
+	err = s.WalletsRepository.RemoveItemFromWallet(walletId, itemId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

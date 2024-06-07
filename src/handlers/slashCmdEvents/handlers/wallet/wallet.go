@@ -55,6 +55,9 @@ func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		}
 		inventoryDisplay += fmt.Sprintf("- `%s` (worth `🪙 %.2f`)\n", item.DisplayName, item.Cost)
 	}
+	if len(inventoryDisplay) == 0 {
+		inventoryDisplay = "_there's no items currently in this wallet._"
+	}
 
 	embedToSend := embed.NewEmbed().
 		SetTitle(fmt.Sprintf("💳	`%s`'s Wallet", user.DiscordTag)).
@@ -62,7 +65,7 @@ func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		AddLineBreakField().
 		AddField("🧾 ID", fmt.Sprintf("`%s`", wallet.Id), false).
-		AddField("🪙 Available Funds", fmt.Sprintf("`%.2f` AzteCoins", wallet.Funds), false).
+		AddField("💰 Available Funds", fmt.Sprintf("`🪙 %.2f` AzteCoins", wallet.Funds), false).
 		AddLineBreakField().
 		AddField("🛍️ Inventory", inventoryDisplay, false)
 
