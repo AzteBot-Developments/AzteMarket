@@ -13,6 +13,7 @@ type DbStockRepository interface {
 	GetStockItemByName(stockItemName string) (*dax.StockItem, error)
 	GetAllItems() ([]dax.StockItem, error)
 	DeleteAllItems() (int64, error)
+	DeleteItem(itemId string) error
 	DecrementAvailableForItem(stockItemId string) error
 }
 
@@ -141,6 +142,23 @@ func (r StockRepository) DeleteAllItems() (int64, error) {
 	}
 
 	return rowsAffected, nil
+}
+
+func (r StockRepository) DeleteItem(itemId string) error {
+
+	stmt, err := r.DbContext.SqlDb.Prepare(`
+	DELETE FROM Stock WHERE id = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(itemId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r StockRepository) DecrementAvailableForItem(stockItemId string) error {

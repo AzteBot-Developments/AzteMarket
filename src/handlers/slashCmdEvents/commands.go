@@ -79,6 +79,18 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 		},
 	},
 	{
+		Name:        "market-remove-item",
+		Description: "Removes an item and all its vailable units from the AzteMarket.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "id",
+				Description: "The ID of the item to remove from the market.",
+				Required:    true,
+			},
+		},
+	},
+	{
 		Name:        "wallet",
 		Description: "Displays the command's author wallet status (funds, details, etc.).",
 	},
@@ -131,15 +143,16 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 }
 
 var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"ping":              slashCmdUtilHandlers.HandleSlashPing,
-	"market":            slashCmdMarketHandlers.HandleSlashViewMarket,
-	"market-clear":      slashCmdMarketHandlers.HandleSlashClearMarket,
-	"market-see-item":   slashCmdMarketHandlers.HandleSlashViewItemOnMarket,
-	"market-add-stock":  slashCmdMarketHandlers.HandleSlashAddStock,
-	"market-buy-item":   slashCmdMarketHandlers.HandleSlashBuyItem,
-	"wallet":            slashCmdWalletHandlers.HandleSlashWallet,
-	"wallet-create":     slashCmdWalletHandlers.HandleSlashCreateWallet,
-	"wallet-delete":     slashCmdWalletHandlers.HandleSlashDeleteWallet,
-	"wallet-send-funds": slashCmdWalletHandlers.HandleSlashSendFundsFromWallet,
-	"wallet-use-item":   slashCmdWalletHandlers.HandleSlashUseItemFromWallet,
+	"ping":               slashCmdUtilHandlers.HandleSlashPing,
+	"market":             slashCmdMarketHandlers.HandleSlashViewMarket,
+	"market-clear":       slashCmdMarketHandlers.HandleSlashClearMarket,
+	"market-see-item":    slashCmdMarketHandlers.HandleSlashViewItemOnMarket,
+	"market-add-stock":   slashCmdMarketHandlers.HandleSlashAddStock,
+	"market-buy-item":    slashCmdMarketHandlers.HandleSlashBuyItem,
+	"market-remove-item": slashCmdMarketHandlers.HandleSlashRemoveItemFromMarket,
+	"wallet":             slashCmdWalletHandlers.HandleSlashWallet,
+	"wallet-create":      slashCmdWalletHandlers.HandleSlashCreateWallet,
+	"wallet-delete":      slashCmdWalletHandlers.HandleSlashDeleteWallet,
+	"wallet-send-funds":  slashCmdWalletHandlers.HandleSlashSendFundsFromWallet,
+	"wallet-use-item":    slashCmdWalletHandlers.HandleSlashUseItemFromWallet,
 }

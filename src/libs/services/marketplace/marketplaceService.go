@@ -74,6 +74,17 @@ func (s MarketplaceService) ClearMarket() (int64, error) {
 	return deletedCount, nil
 }
 
+func (s MarketplaceService) RemoveItemFromMarket(itemId string) error {
+
+	err := s.StockRepository.DeleteItem(itemId)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return err
+	}
+
+	return nil
+}
+
 func (s MarketplaceService) BuyItem(buyerUserId string, itemId string) error {
 
 	item, err := s.StockRepository.GetStockItem(itemId)
