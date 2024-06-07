@@ -36,7 +36,7 @@ func HandleSlashViewMarket(s *discordgo.Session, i *discordgo.InteractionCreate)
 
 	embedToSend := embed.NewEmbed().
 		SetAuthor("AzteMarket", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
-		SetDescription("The AzteMarket is an exchange which offers up various benefits for members to buy via AzteCoins.\nThe items are bought using slash commands and their associated IDs.").
+		SetDescription(fmt.Sprintf("<@%s> is an exchange which offers up various benefits for members to buy via AzteCoins.\nThe items are bought using slash commands and their associated IDs.", sharedConfig.DiscordBotAppId)).
 		// SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(sharedConfig.EmbedColorCode).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
