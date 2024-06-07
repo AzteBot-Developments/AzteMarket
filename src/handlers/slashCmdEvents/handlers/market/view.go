@@ -35,7 +35,7 @@ func HandleSlashViewMarket(s *discordgo.Session, i *discordgo.InteractionCreate)
 		AddField(fmt.Sprintf("Currently, there are `%d` benefits available to purchase on the AzteMarket.", len(items)), "", false)
 
 	for idx, item := range items {
-		embedToSend.AddField("", fmt.Sprintf("%d. `%s` - `🪙 %.2f` AzteCoins (Available: `%d`)\nID: `%s`\nAdditional details: `%s`\nTo buy: `/market-buy-item %s`", idx+1, item.DisplayName, item.Cost, item.NumAvailable, item.Id, item.Details, item.Id), false)
+		embedToSend.AddField("", fmt.Sprintf("%d. `%s` - `🪙 %.2f` AzteCoins (Available: `%d`)\nAdditional details: `%s`\nTo buy: `/market-buy-item %s`", idx+1, item.DisplayName, item.Cost, item.NumAvailable, item.Details, item.Id), false)
 	}
 
 	paginationRow := embed.GetPaginationActionRowForEmbed(sharedRuntime.PreviousPageOnEmbedEventId, sharedRuntime.NextPageOnEmbedEventId)
