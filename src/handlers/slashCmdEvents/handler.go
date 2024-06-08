@@ -6,6 +6,7 @@ import (
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/interaction"
 	"github.com/RazvanBerbece/AzteMarket/pkg/utils"
+	actionEvent "github.com/RazvanBerbece/AzteMarket/src/handlers/remoteEvents/actionEvents"
 	logUtils "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger/utils"
 	sharedConfig "github.com/RazvanBerbece/AzteMarket/src/shared/config"
 	sharedRuntime "github.com/RazvanBerbece/AzteMarket/src/shared/runtime"
@@ -15,6 +16,13 @@ import (
 func HandleSlashEvents(s *discordgo.Session) {
 
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
+		if i.Type == discordgo.InteractionMessageComponent {
+			// This configures button press event handlers for the bot
+			// i.e pressing 'Accept' on a button on a generated embed and emitting the event, embed pagination, etc.
+			actionEvent.HandleMessageComponentInteraction(s, i)
+			return
+		}
 
 		appData := i.ApplicationCommandData()
 
