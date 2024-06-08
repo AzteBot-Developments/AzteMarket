@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/embed"
+	"github.com/RazvanBerbece/AzteMarket/pkg/interaction"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -26,7 +27,7 @@ func (l DiscordChannelLogger) LogInfo(msg string) {
 	log := fmt.Sprintf("ℹ️ INFO: %s", msg)
 
 	embed := embed.NewEmbed().
-		SetColor(000000)
+		SetColor(interaction.InfofEmbedColorCode)
 
 	embed.AddField("", log, false)
 
@@ -45,7 +46,7 @@ func (l DiscordChannelLogger) LogWarn(msg string) {
 	log := fmt.Sprintf("⚠️ WARN: %s", msg)
 
 	embed := embed.NewEmbed().
-		SetColor(000000)
+		SetColor(interaction.WarnEmbedColorCode)
 
 	embed.AddField("", log, false)
 
@@ -64,7 +65,7 @@ func (l DiscordChannelLogger) LogError(msg string) {
 	log := fmt.Sprintf("⛔ ERROR: %s", msg)
 
 	embed := embed.NewEmbed().
-		SetColor(000000)
+		SetColor(interaction.ErrorEmbedColorCode)
 
 	embed.AddField("", log, false)
 
