@@ -49,7 +49,6 @@ func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		}
 		item, err := sharedRuntime.MarketplaceService.GetItemFromMarket(id)
 		if err != nil {
-			interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
 			go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
 			continue
 		}
