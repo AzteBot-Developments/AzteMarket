@@ -10,7 +10,7 @@ func GetCommandId(s *discordgo.Session, appId string, guildId string, cmdName st
 
 	commands, err := s.ApplicationCommands(appId, guildId)
 	if err != nil {
-		return "", fmt.Errorf("error fetching commands: %v", err)
+		return "", fmt.Errorf("error fetching commands for guild %s: %v", guildId, err)
 	}
 
 	for _, cmd := range commands {
