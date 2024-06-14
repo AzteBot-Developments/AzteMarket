@@ -68,5 +68,5 @@ func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		AddLineBreakField().
 		AddField("🛍️ Inventory", inventoryDisplay, false)
 
-	interaction.SendEmbedSlashResponse(s, i.Interaction, *embedToSend)
+	interaction.SendEmbedSlashResponse(s, i.Interaction, *embedToSend, false)
 }

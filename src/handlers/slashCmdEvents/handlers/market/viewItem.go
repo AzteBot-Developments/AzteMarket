@@ -36,6 +36,6 @@ func HandleSlashViewItemOnMarket(s *discordgo.Session, i *discordgo.InteractionC
 		AddField("Cost", fmt.Sprintf("`🪙 %.2f` AzteCoins", item.Cost), false).
 		AddField("To Buy", fmt.Sprintf("`/market-buy-item %s`", item.Id), false)
 
-	interaction.SendEmbedSlashResponse(s, i.Interaction, *embedToSend)
+	interaction.SendEmbedSlashResponse(s, i.Interaction, *embedToSend, false)
 
 }
