@@ -8,6 +8,9 @@ import (
 )
 
 // Command tuning and validation
+var TransferReferenceMinLength = 5
+var TransferReferenceMaxLength = 256
+
 var ItemNameMinLength = 5
 var ItemNameMaxLength = 128
 
@@ -113,7 +116,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
 				Name:        "id",
-				Description: "The wallet ID to send the funds to.",
+				Description: "The wallet / user ID to send the funds to.",
 				Required:    true,
 			},
 			{
@@ -121,6 +124,14 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 				Name:        "funds",
 				Description: "The amount of funds to send. (max. 50000 per transaction)",
 				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "reference",
+				Description: "A message to attach to the transfer",
+				Required:    false,
+				MinLength:   &TransferReferenceMinLength,
+				MaxLength:   TransferReferenceMaxLength,
 			},
 		},
 	},

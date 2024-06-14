@@ -71,7 +71,7 @@ func (s WalletService) DeleteWalletForUser(userId string) error {
 
 }
 
-func (s WalletService) SendFunds(session *discordgo.Session, senderUserId string, receiverWalletId string, funds float64) (float64, error) {
+func (s WalletService) SendFunds(session *discordgo.Session, senderUserId string, receiverWalletId string, funds float64, ref string) (float64, error) {
 
 	// ensure that sender has a wallet
 	senderWallet, err := s.WalletsRepository.GetWalletForUser(senderUserId)
@@ -104,7 +104,8 @@ func (s WalletService) SendFunds(session *discordgo.Session, senderUserId string
 	if err != nil {
 		return -1, err
 	}
-	// update receiver wallet with new funds
+
+	// Get a new instance of a wallet with the updated funds
 	receiverWallet, err := s.WalletsRepository.GetWallet(receiverWalletId)
 	if err != nil {
 		return -1, fmt.Errorf("receiver `%s` does not currently own a wallet for the AzteMarket; please ensure that the receiver owns a wallet to send funds to them", receiverWalletId)
@@ -115,8 +116,72 @@ func (s WalletService) SendFunds(session *discordgo.Session, senderUserId string
 		SetAuthor("AzteMarket Wallet Service").
 		SetColor(sharedConfig.EmbedColorCode).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
-		SetDescription(fmt.Sprintf("You have just received `🪙 %.2f` AzteCoins from `%s` !", funds, senderWallet.Id)).
-		AddField("🧾 Your updated balance", fmt.Sprintf("`🪙 %.2f` AzteCoins", receiverWallet.Funds), false)
+		SetDescription(fmt.Sprintf("You have just received `🪙 %.2f` AzteCoins from `%s` !", funds, senderWallet.Id))
+
+	if ref != "" {
+		announcement.AddField("Transfer Reference", ref, false)
+	}
+
+	announcement.AddField("🧾 Your updated balance", fmt.Sprintf("`🪙 %.2f` AzteCoins", receiverWallet.Funds), false)
+
+	// Ignore errs
+	go dm.DmEmbedUser(session, receiverWallet.UserId, *announcement.MessageEmbed)
+
+	return senderWallet.Funds - funds, nil
+}
+
+func (s WalletService) SendFundsToUser(session *discordgo.Session, senderUserId string, receiverUserId string, funds float64, ref string) (float64, error) {
+
+	// ensure that sender has a wallet
+	senderWallet, err := s.WalletsRepository.GetWalletForUser(senderUserId)
+	if err != nil {
+		return -1, fmt.Errorf("sender `%s` does not currently own a wallet for the AzteMarket; please create one in order to send funds", senderUserId)
+	}
+
+	// Validation
+	if funds > senderWallet.Funds {
+		return -1, fmt.Errorf("sender `%s` blocked from transfering more AzteCoins than they own (available: `🪙 %.2f`)", senderUserId, senderWallet.Funds)
+	}
+	if senderUserId == receiverUserId {
+		return -1, fmt.Errorf("sender `%s` blocked from sending funds to own wallet", senderUserId)
+	}
+
+	// ensure that receiver has a wallet
+	receiverWallet, err := s.WalletsRepository.GetWalletForUser(receiverUserId)
+	if err != nil {
+		return -1, fmt.Errorf("receiver `%s` does not currently own a wallet for the AzteMarket; please ensure that the receiver owns a wallet to send funds to them", receiverUserId)
+	}
+
+	// Remove funds from sender and update in DB
+	err = s.WalletsRepository.SubtractFundsFromWallet(senderWallet.Id, funds)
+	if err != nil {
+		return -1, err
+	}
+
+	// Add funds to receiver and update in DB
+	err = s.WalletsRepository.AddFundsToWallet(receiverWallet.Id, funds)
+	if err != nil {
+		return -1, err
+	}
+
+	// Get a new instance of a wallet with the updated funds
+	receiverWallet, err = s.WalletsRepository.GetWallet(receiverWallet.Id)
+	if err != nil {
+		return -1, fmt.Errorf("receiver `%s` does not currently own a wallet for the AzteMarket; please ensure that the receiver owns a wallet to send funds to them", receiverUserId)
+	}
+
+	// Announce target user that they received funds
+	announcement := embed.NewEmbed().
+		SetAuthor("AzteMarket Wallet Service").
+		SetColor(sharedConfig.EmbedColorCode).
+		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
+		SetDescription(fmt.Sprintf("You have just received `🪙 %.2f` AzteCoins from `%s` !", funds, senderWallet.Id))
+
+	if ref != "" {
+		announcement.AddField("Transfer Reference", ref, false)
+	}
+
+	announcement.AddField("🧾 Your updated balance", fmt.Sprintf("`🪙 %.2f` AzteCoins", receiverWallet.Funds), false)
 
 	// Ignore errs
 	go dm.DmEmbedUser(session, receiverWallet.UserId, *announcement.MessageEmbed)

@@ -14,8 +14,13 @@ import (
 
 func HandleSlashSendFundsFromWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	receiverWalletId := i.ApplicationCommandData().Options[0].StringValue()
+	receiverId := i.ApplicationCommandData().Options[0].StringValue()
 	funds := i.ApplicationCommandData().Options[1].StringValue()
+
+	var ref string = ""
+	if len(i.ApplicationCommandData().Options) > 2 {
+		ref = i.ApplicationCommandData().Options[2].StringValue()
+	}
 
 	fFunds, err := utils.StringToFloat64(funds)
 	if err != nil {
@@ -29,17 +34,34 @@ func HandleSlashSendFundsFromWallet(s *discordgo.Session, i *discordgo.Interacti
 
 	authorUserId := i.Member.User.ID // sender
 
-	// Block attempts to send funds when the target ID is not a wallet ID
-	if !strings.Contains(receiverWalletId, "@OTA") {
-		interaction.SendErrorEmbedResponse(s, i.Interaction, fmt.Sprintf("Invalid input argument (term: `%s`)", i.ApplicationCommandData().Options[0].Name))
-		return
+	var receiverUserId string = ""
+	var receiverWalletId string = ""
+	if strings.Contains(receiverId, "@OTA") {
+		// Possibly a wallet ID
+		receiverWalletId = receiverId
+	} else {
+		// Possibly a user ID
+		receiverUserId = utils.GetDiscordIdFromMentionFormat(receiverId)
 	}
 
-	updatedFunds, transferError := sharedRuntime.WalletService.SendFunds(s, authorUserId, receiverWalletId, *fFunds)
-	if transferError != nil {
-		interaction.SendErrorEmbedResponse(s, i.Interaction, transferError.Error())
-		go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, transferError.Error())
-		return
+	var updatedFunds float64
+
+	if receiverUserId != "" && receiverWalletId == "" {
+		// Send by user ID
+		updatedFunds, err = sharedRuntime.WalletService.SendFundsToUser(s, authorUserId, receiverUserId, *fFunds, ref)
+		if err != nil {
+			interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
+			go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
+			return
+		}
+	} else if receiverWalletId != "" && receiverUserId == "" {
+		// send by wallet ID
+		updatedFunds, err = sharedRuntime.WalletService.SendFunds(s, authorUserId, receiverWalletId, *fFunds, ref)
+		if err != nil {
+			interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
+			go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
+			return
+		}
 	}
 
 	senderWallet, err := sharedRuntime.WalletService.GetWalletForUser(authorUserId)
@@ -52,5 +74,9 @@ func HandleSlashSendFundsFromWallet(s *discordgo.Session, i *discordgo.Interacti
 	// Audit transfer in the ledger
 	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Ledger", sharedConfig.DiscordChannelTopicPairs, fmt.Sprintf("`%s` sent `🪙 %.2f` AzteCoins to wallet `%s`", senderWallet.Id, *fFunds, receiverWalletId))
 
-	interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Successfully transferred `%.2f` AzteCoins to `%s`. Your new balance is `🪙 %.2f` AzteCoins.", *fFunds, receiverWalletId, updatedFunds))
+	if receiverUserId != "" && receiverWalletId == "" {
+		interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Successfully transferred `%.2f` AzteCoins to `%s`. Your new balance is `🪙 %.2f` AzteCoins.", *fFunds, receiverUserId, updatedFunds))
+	} else if receiverWalletId != "" && receiverUserId == "" {
+		interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Successfully transferred `%.2f` AzteCoins to `%s`. Your new balance is `🪙 %.2f` AzteCoins.", *fFunds, receiverWalletId, updatedFunds))
+	}
 }
