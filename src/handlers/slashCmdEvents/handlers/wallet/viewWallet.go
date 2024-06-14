@@ -7,6 +7,7 @@ import (
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/embed"
 	"github.com/RazvanBerbece/AzteMarket/pkg/interaction"
+	"github.com/RazvanBerbece/AzteMarket/pkg/utils"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/dax"
 	logUtils "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger/utils"
 	sharedConfig "github.com/RazvanBerbece/AzteMarket/src/shared/config"
@@ -50,14 +51,15 @@ func HandleSlashViewWallet(s *discordgo.Session, i *discordgo.InteractionCreate)
 		}
 	} else {
 		// Possibly a user ID
+		sanitisedUserId := utils.GetDiscordIdFromMentionFormat(targetId)
 		var walletErr error
-		wallet, walletErr = sharedRuntime.WalletService.GetWalletForUser(targetId)
+		wallet, walletErr = sharedRuntime.WalletService.GetWalletForUser(sanitisedUserId)
 		if walletErr != nil {
 
 			// wallet doesn't exist, so customise the message
 			if walletErr == sql.ErrNoRows {
 				interaction.SendErrorEmbedResponse(s, i.Interaction, "No wallet was found for this user ID. They can create a new wallet by using the `/wallet-create` slash command.")
-				go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, fmt.Sprintf("User `%s` tried to retrieve a non existing wallet entry (`%s`).", authorUsername, targetId))
+				go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, fmt.Sprintf("User `%s` tried to retrieve a non existing wallet entry (`%s`).", authorUsername, sanitisedUserId))
 				return
 			}
 
@@ -67,7 +69,7 @@ func HandleSlashViewWallet(s *discordgo.Session, i *discordgo.InteractionCreate)
 		}
 
 		var userErr error
-		targetUser, userErr = sharedRuntime.UserService.GetUser(targetId)
+		targetUser, userErr = sharedRuntime.UserService.GetUser(sanitisedUserId)
 		if userErr != nil {
 			interaction.SendErrorEmbedResponse(s, i.Interaction, userErr.Error())
 			go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, userErr.Error())
