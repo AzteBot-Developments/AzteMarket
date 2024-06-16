@@ -7,4 +7,6 @@ jobs:
 
     update:
         uses: RazvanBerbece/shared-workflows/.github/workflows/update_gh_dependencies.yml@main
-        secrets: inherit
+        secrets:
+            PAT: ${{ secrets.GH_TOKEN }}
+        
