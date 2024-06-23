@@ -23,7 +23,7 @@ func (s MarketplaceService) AddItemForSaleOnMarket(itemName string, itemDetails 
 	itemId, err := s.StockRepository.AddStockItem(itemName, itemDetails, cost, numAvailable)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return nil, err
+		return nil, fmt.Errorf("failed to add given item to the market")
 	}
 
 	return itemId, nil
@@ -34,7 +34,7 @@ func (s MarketplaceService) GetItemFromMarket(itemId string) (*dax.StockItem, er
 	item, err := s.StockRepository.GetStockItem(itemId)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return nil, err
+		return nil, fmt.Errorf("failed to retrieve item with ID `%s` from the market", itemId)
 	}
 
 	return item, nil
@@ -45,7 +45,7 @@ func (s MarketplaceService) GetItemFromMarketByName(itemName string) (*dax.Stock
 	item, err := s.StockRepository.GetStockItemByName(itemName)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return nil, err
+		return nil, fmt.Errorf("failed to retrieve item with name `%s` from the market", itemName)
 	}
 
 	return item, nil
@@ -56,7 +56,7 @@ func (s MarketplaceService) GetAllItemsOnMarket() ([]dax.StockItem, error) {
 	items, err := s.StockRepository.GetAllItems()
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return nil, err
+		return nil, fmt.Errorf("failed to retrieve all items from the market")
 	}
 
 	return items, nil
@@ -67,7 +67,7 @@ func (s MarketplaceService) ClearMarket() (int64, error) {
 	deletedCount, err := s.StockRepository.DeleteAllItems()
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return -1, err
+		return -1, fmt.Errorf("failed to clear all items from the market")
 	}
 
 	return deletedCount, nil
@@ -78,7 +78,7 @@ func (s MarketplaceService) RemoveItemFromMarket(itemId string) error {
 	err := s.StockRepository.DeleteItem(itemId)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return err
+		return fmt.Errorf("failed to delete item with ID `%s` from the market", itemId)
 	}
 
 	return nil
@@ -89,7 +89,7 @@ func (s MarketplaceService) BuyItem(buyerUserId string, itemId string) error {
 	item, err := s.StockRepository.GetStockItem(itemId)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return err
+		return fmt.Errorf("failed to retrieve item with ID `%s`", itemId)
 	}
 
 	// Ensure that the item can be bought (i.e stock is available)
@@ -100,7 +100,7 @@ func (s MarketplaceService) BuyItem(buyerUserId string, itemId string) error {
 	buyerWallet, err := s.WalletsRepository.GetWalletForUser(buyerUserId)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return err
+		return fmt.Errorf("failed to retrieve wallet for user `%s`", buyerUserId)
 	}
 
 	// Ensure that user has enough funds to buy the item
@@ -128,21 +128,21 @@ func (s MarketplaceService) BuyItem(buyerUserId string, itemId string) error {
 	err = s.WalletsRepository.SubtractFundsFromWallet(buyerWallet.Id, item.Cost)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return err
+		return fmt.Errorf("failed to subtract `%.2f` funds from user with ID `%s`", item.Cost, buyerWallet.UserId)
 	}
 
 	// Add item ID to user's inventory
 	err = s.WalletsRepository.AddItemToWallet(buyerWallet.Id, item.Id)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return err
+		return fmt.Errorf("failed to add item `%s` to user with ID `%s`", item.DisplayName, buyerWallet.UserId)
 	}
 
 	// Decrement num of available units of this item on the market
 	err = s.StockRepository.DecrementAvailableForItem(item.Id, 1)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return err
+		return fmt.Errorf("failed to remove `%d` units from item `%s`", 1, item.DisplayName)
 	}
 
 	return nil
@@ -154,7 +154,7 @@ func (s MarketplaceService) RemoveStockUnitsForItem(itemId string, multiplier in
 	item, err := s.GetItemFromMarket(itemId)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return err
+		return fmt.Errorf("failed to retrieve item with ID `%s`", itemId)
 	}
 
 	// Domain level validation
@@ -165,7 +165,7 @@ func (s MarketplaceService) RemoveStockUnitsForItem(itemId string, multiplier in
 	err = s.StockRepository.DecrementAvailableForItem(itemId, multiplier)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return err
+		return fmt.Errorf("failed to remove `%d` units from item `%s`", multiplier, item.DisplayName)
 	}
 
 	return nil
@@ -174,10 +174,16 @@ func (s MarketplaceService) RemoveStockUnitsForItem(itemId string, multiplier in
 
 func (s MarketplaceService) AddStockUnitsForItem(itemId string, multiplier int) error {
 
-	err := s.StockRepository.IncrementAvailableForItem(itemId, multiplier)
+	item, err := s.GetItemFromMarket(itemId)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return err
+		return fmt.Errorf("failed to retrieve item with ID `%s`", itemId)
+	}
+
+	err = s.StockRepository.IncrementAvailableForItem(itemId, multiplier)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return fmt.Errorf("failed to add `%d` new units to item `%s`", multiplier, item.DisplayName)
 	}
 
 	return nil
