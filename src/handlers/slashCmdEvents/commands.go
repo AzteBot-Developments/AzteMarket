@@ -157,7 +157,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "wallet-create",
-		Description: "Creates an AzteMarket wallet for the author of the command !",
+		Description: "Creates an AzteMarket wallet for the author of the command.",
 	},
 	{
 		Name:        "wallet-delete",

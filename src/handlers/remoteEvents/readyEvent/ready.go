@@ -18,6 +18,8 @@ func DefaultHandler(s *discordgo.Session, event *discordgo.Ready) {
 	log := fmt.Sprintf("`%s` is now online", event.User.Username)
 	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, log)
 
+	s.UpdateGameStatus(0, "/help")
+
 	// Start gochannel event handlers which depend on the app session
 	go channelEventsHandler.HandleComplexResponseEvents(s, sharedConfig.EmbedPageSize)
 
