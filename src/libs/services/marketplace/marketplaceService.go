@@ -27,7 +27,6 @@ func (s MarketplaceService) AddItemForSaleOnMarket(itemName string, itemDetails 
 	}
 
 	return itemId, nil
-
 }
 
 func (s MarketplaceService) GetItemFromMarket(itemId string) (*dax.StockItem, error) {
@@ -140,7 +139,42 @@ func (s MarketplaceService) BuyItem(buyerUserId string, itemId string) error {
 	}
 
 	// Decrement num of available units of this item on the market
-	err = s.StockRepository.DecrementAvailableForItem(item.Id)
+	err = s.StockRepository.DecrementAvailableForItem(item.Id, 1)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return err
+	}
+
+	return nil
+
+}
+
+func (s MarketplaceService) RemoveStockUnitsForItem(itemId string, multiplier int) error {
+
+	item, err := s.GetItemFromMarket(itemId)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return err
+	}
+
+	// Domain level validation
+	if item.NumAvailable < multiplier {
+		return fmt.Errorf("cannot remove more units from an item than there are available (`%d` < `%d`)", item.NumAvailable, multiplier)
+	}
+
+	err = s.StockRepository.DecrementAvailableForItem(itemId, multiplier)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return err
+	}
+
+	return nil
+
+}
+
+func (s MarketplaceService) AddStockUnitsForItem(itemId string, multiplier int) error {
+
+	err := s.StockRepository.IncrementAvailableForItem(itemId, multiplier)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
 		return err

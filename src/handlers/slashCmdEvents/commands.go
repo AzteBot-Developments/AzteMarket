@@ -14,6 +14,8 @@ var TransferReferenceMaxLength = 256
 var ItemNameMinLength = 5
 var ItemNameMaxLength = 128
 
+var MultiplierMinValue = 1.0
+
 var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 	{
 		Name:        "ping",
@@ -82,6 +84,46 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 				Name:        "id",
 				Description: "The ID of the item to buy from the market.",
 				Required:    true,
+			},
+		},
+	},
+	{
+		Name:        "market-add-units",
+		Description: "Adds units of a certain item to be available for sale on the market.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "id",
+				Description: "The ID of the item to supply with extra units.",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionInteger,
+				Name:        "multiplier",
+				Description: "How many units to supply.",
+				Required:    true,
+				MinValue:    &MultiplierMinValue,
+				MaxValue:    50000,
+			},
+		},
+	},
+	{
+		Name:        "market-remove-units",
+		Description: "Removes units of a certain item so they're not available for sale on the market anymore.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "id",
+				Description: "The ID of the item to remove extra units from.",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionInteger,
+				Name:        "multiplier",
+				Description: "How many units to remove.",
+				Required:    true,
+				MinValue:    &MultiplierMinValue,
+				MaxValue:    50000,
 			},
 		},
 	},
@@ -170,18 +212,20 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 }
 
 var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"ping":               slashCmdUtilHandlers.HandleSlashPing,
-	"help":               HandleSlashAzteMarketHelp,
-	"market":             slashCmdMarketHandlers.HandleSlashViewMarket,
-	"market-clear":       slashCmdMarketHandlers.HandleSlashClearMarket,
-	"market-see-item":    slashCmdMarketHandlers.HandleSlashViewItemOnMarket,
-	"market-add-stock":   slashCmdMarketHandlers.HandleSlashAddStock,
-	"market-buy-item":    slashCmdMarketHandlers.HandleSlashBuyItem,
-	"market-remove-item": slashCmdMarketHandlers.HandleSlashRemoveItemFromMarket,
-	"wallet":             slashCmdWalletHandlers.HandleSlashWallet,
-	"wallet-view":        slashCmdWalletHandlers.HandleSlashViewWallet,
-	"wallet-create":      slashCmdWalletHandlers.HandleSlashCreateWallet,
-	"wallet-delete":      slashCmdWalletHandlers.HandleSlashDeleteWallet,
-	"wallet-send-funds":  slashCmdWalletHandlers.HandleSlashSendFundsFromWallet,
-	"wallet-use-item":    slashCmdWalletHandlers.HandleSlashUseItemFromWallet,
+	"ping":                slashCmdUtilHandlers.HandleSlashPing,
+	"help":                HandleSlashAzteMarketHelp,
+	"market":              slashCmdMarketHandlers.HandleSlashViewMarket,
+	"market-clear":        slashCmdMarketHandlers.HandleSlashClearMarket,
+	"market-see-item":     slashCmdMarketHandlers.HandleSlashViewItemOnMarket,
+	"market-add-stock":    slashCmdMarketHandlers.HandleSlashAddStock,
+	"market-buy-item":     slashCmdMarketHandlers.HandleSlashBuyItem,
+	"market-remove-item":  slashCmdMarketHandlers.HandleSlashRemoveItemFromMarket,
+	"market-add-units":    slashCmdMarketHandlers.HandleSlashAddAvailableUnitsForItem,
+	"market-remove-units": slashCmdMarketHandlers.HandleSlashRemoveAvailableUnitsForItem,
+	"wallet":              slashCmdWalletHandlers.HandleSlashWallet,
+	"wallet-view":         slashCmdWalletHandlers.HandleSlashViewWallet,
+	"wallet-create":       slashCmdWalletHandlers.HandleSlashCreateWallet,
+	"wallet-delete":       slashCmdWalletHandlers.HandleSlashDeleteWallet,
+	"wallet-send-funds":   slashCmdWalletHandlers.HandleSlashSendFundsFromWallet,
+	"wallet-use-item":     slashCmdWalletHandlers.HandleSlashUseItemFromWallet,
 }

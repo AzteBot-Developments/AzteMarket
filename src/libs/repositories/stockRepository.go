@@ -14,7 +14,8 @@ type DbStockRepository interface {
 	GetAllItems() ([]dax.StockItem, error)
 	DeleteAllItems() (int64, error)
 	DeleteItem(itemId string) error
-	DecrementAvailableForItem(stockItemId string) error
+	DecrementAvailableForItem(stockItemId string, multiplier int) error
+	IncrementAvailableForItem(stockItemId string, multiplier int) error
 }
 
 type StockRepository struct {
@@ -161,18 +162,37 @@ func (r StockRepository) DeleteItem(itemId string) error {
 	return nil
 }
 
-func (r StockRepository) DecrementAvailableForItem(stockItemId string) error {
+func (r StockRepository) DecrementAvailableForItem(stockItemId string, multiplier int) error {
 
 	stmt, err := r.DbContext.SqlDb.Prepare(`
 	UPDATE Stock SET 
-		numAvailable = numAvailable - 1
+		numAvailable = numAvailable - ?
 	WHERE id = ?`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(stockItemId)
+	_, err = stmt.Exec(multiplier, stockItemId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r StockRepository) IncrementAvailableForItem(stockItemId string, multiplier int) error {
+
+	stmt, err := r.DbContext.SqlDb.Prepare(`
+	UPDATE Stock SET 
+		numAvailable = numAvailable + ?
+	WHERE id = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(multiplier, stockItemId)
 	if err != nil {
 		return err
 	}
