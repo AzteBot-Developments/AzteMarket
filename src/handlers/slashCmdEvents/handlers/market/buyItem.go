@@ -13,6 +13,7 @@ import (
 func HandleSlashBuyItem(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	buyerId := i.Member.User.ID
+	buyerTag := fmt.Sprintf("<@%s>", buyerId)
 
 	// Retrieve input args from command
 	itemId := i.ApplicationCommandData().Options[0].StringValue()
@@ -48,6 +49,10 @@ func HandleSlashBuyItem(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Audit ledger update for the coin transfer
 	ledgerLog := fmt.Sprintf("`%s` bought item `%s` [`%s`] for `🪙 %.2f` AzteCoins", buyerWallet.Id, item.DisplayName, item.Id, item.Cost)
 	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Ledger", sharedConfig.DiscordChannelTopicPairs, ledgerLog)
+
+	// Audit item purchase in designated staff channel
+	purchaseLog := fmt.Sprintf("`%s` bought item `%s` [`%s`] for `🪙 %.2f` AzteCoins. Please ensure that they create a ticket and that their benefit is delivered !", buyerTag, item.DisplayName, item.Id, item.Cost)
+	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "PurchaseAudit", sharedConfig.DiscordChannelTopicPairs, purchaseLog)
 
 	// Final response to interaction
 	interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Bought item with ID `%s` (`%s`) !", itemId, item.DisplayName))
