@@ -51,7 +51,7 @@ func HandleSlashBuyItem(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Ledger", sharedConfig.DiscordChannelTopicPairs, ledgerLog)
 
 	// Audit item purchase in designated staff channel
-	purchaseLog := fmt.Sprintf("%s bought item `%s` [`%s`] for `🪙 %.2f` AzteCoins. Please ensure that they create a ticket and that their benefit is delivered !", buyerTag, item.DisplayName, item.Id, item.Cost)
+	purchaseLog := fmt.Sprintf("%s bought item `%s` [`%s`] for `🪙 %.2f` AzteCoins.\n\nPlease ensure that they create a ticket and that their benefit is delivered !\n\n||@everyone||", buyerTag, item.DisplayName, item.Id, item.Cost)
 	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "PurchaseAudit", sharedConfig.DiscordChannelTopicPairs, purchaseLog)
 
 	// Final response to interaction
