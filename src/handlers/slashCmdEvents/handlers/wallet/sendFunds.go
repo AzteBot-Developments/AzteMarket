@@ -72,11 +72,15 @@ func HandleSlashSendFundsFromWallet(s *discordgo.Session, i *discordgo.Interacti
 	}
 
 	// Audit transfer in the ledger
-	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Ledger", sharedConfig.DiscordChannelTopicPairs, fmt.Sprintf("`%s` sent `🪙 %.2f` AzteCoins to wallet `%s`", senderWallet.Id, *fFunds, receiverWalletId))
+	if receiverWalletId != "" {
+		go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Ledger", sharedConfig.DiscordChannelTopicPairs, fmt.Sprintf("`%s` sent `🪙 %.2f` AzteCoins to wallet `%s`", senderWallet.Id, *fFunds, receiverWalletId))
+	} else if receiverUserId != "" {
+		go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Ledger", sharedConfig.DiscordChannelTopicPairs, fmt.Sprintf("`%s` sent `🪙 %.2f` AzteCoins to user `%s`", senderWallet.Id, *fFunds, receiverUserId))
+	}
 
 	if receiverUserId != "" && receiverWalletId == "" {
-		interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Successfully transferred `%.2f` AzteCoins to `%s`. Your new balance is `🪙 %.2f` AzteCoins.", *fFunds, receiverUserId, updatedFunds))
+		interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Successfully transferred `%.2f` AzteCoins to user `%s`. Your new balance is `🪙 %.2f` AzteCoins.", *fFunds, receiverUserId, updatedFunds))
 	} else if receiverWalletId != "" && receiverUserId == "" {
-		interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Successfully transferred `%.2f` AzteCoins to `%s`. Your new balance is `🪙 %.2f` AzteCoins.", *fFunds, receiverWalletId, updatedFunds))
+		interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Successfully transferred `%.2f` AzteCoins to wallet `%s`. Your new balance is `🪙 %.2f` AzteCoins.", *fFunds, receiverWalletId, updatedFunds))
 	}
 }

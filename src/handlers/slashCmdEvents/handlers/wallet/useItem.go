@@ -53,5 +53,5 @@ func HandleSlashUseItemFromWallet(s *discordgo.Session, i *discordgo.Interaction
 	var useCount int = 1 // 1 for now, could be dynamic if using multiple items at a time becomes a featrue
 	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, fmt.Sprintf("`%s` used an item (`%d` x `%s`)", targetUser.DiscordTag, useCount, targetItem.DisplayName))
 
-	interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Successfully used `%d` x `%s` in `%s`'s wallet [`%s`]", useCount, targetItem.DisplayName, targetUser.DiscordTag, targetWallet.Id))
+	interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Successfully used `%d` x `%s` in `%s`'s wallet [`%s`]. Make sure that a member of staff is aware of this action so they can deliver the benefits.", useCount, targetItem.DisplayName, targetUser.DiscordTag, targetWallet.Id))
 }
