@@ -55,6 +55,6 @@ func HandleSlashBuyItem(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "PurchaseAudit", sharedConfig.DiscordChannelTopicPairs, purchaseLog)
 
 	// Final response to interaction
-	interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Bought item with ID `%s` (`%s`) !", itemId, item.DisplayName))
+	interaction.SendSimpleEmbedSlashResponse(s, i.Interaction, fmt.Sprintf("Bought 1 x `%s` (ID: `%s`)", item.DisplayName, itemId))
 
 }
