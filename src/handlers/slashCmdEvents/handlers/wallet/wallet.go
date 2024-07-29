@@ -15,6 +15,13 @@ import (
 
 func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
+	// Public by default
+	// TODO: Check whether more suitable to have this private by default
+	var ephemeral bool = false
+	if len(i.ApplicationCommandData().Options) != 0 {
+		ephemeral = i.ApplicationCommandData().Options[0].BoolValue()
+	}
+
 	authorUserId := i.Member.User.ID
 	wallet, err := sharedRuntime.WalletService.GetWalletForUser(authorUserId)
 	if err != nil {
@@ -68,5 +75,5 @@ func HandleSlashWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		AddLineBreakField().
 		AddField("🛍️ Inventory", inventoryDisplay, false)
 
-	interaction.SendEmbedSlashResponse(s, i.Interaction, *embedToSend, false)
+	interaction.SendEmbedSlashResponse(s, i.Interaction, *embedToSend, ephemeral)
 }

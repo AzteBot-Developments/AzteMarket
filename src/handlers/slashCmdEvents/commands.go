@@ -142,6 +142,13 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 	{
 		Name:        "wallet",
 		Description: "Displays the command's author wallet status (funds, details, etc.).",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionBoolean,
+				Name:        "private",
+				Description: "Whether the wallet status is displayed ephemerally (i.e true to hide from other users).",
+			},
+		},
 	},
 	{
 		Name:        "wallet-view",
