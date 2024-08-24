@@ -31,6 +31,7 @@ func HandleSlashCreateEconomy(s *discordgo.Session, i *discordgo.InteractionCrea
 			sharedConfig.DiscordChannelTopicPairs,
 			err.Error(),
 		)
+		return
 	}
 
 	go logUtils.PublishDiscordLogInfoEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, "A new economy was created for this server")
