@@ -59,15 +59,15 @@ func (s WalletService) GetWalletForUser(userId string) (*dax.Wallet, error) {
 
 }
 
-func (s WalletService) DeleteWalletForUser(userId string) error {
+func (s WalletService) DeleteWalletForUser(userId string) (int64, error) {
 
-	err := s.WalletsRepository.DeleteWalletForUser(userId)
+	rowsAffected, err := s.WalletsRepository.DeleteWalletForUser(userId)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
-		return err
+		return rowsAffected, err
 	}
 
-	return nil
+	return rowsAffected, nil
 
 }
 

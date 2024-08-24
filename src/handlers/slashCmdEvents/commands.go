@@ -203,7 +203,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
 				Name:        "id",
-				Description: "The wallet ID from which to use the item.",
+				Description: "The wallet / user ID from which to use the item.",
 				Required:    true,
 			},
 			{

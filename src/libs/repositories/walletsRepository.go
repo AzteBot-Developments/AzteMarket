@@ -12,7 +12,7 @@ type DbWalletsRepository interface {
 	GetWallet(id string) (*dax.Wallet, error)
 	CreateWalletForUser(userId string) (*dax.Wallet, error)
 	GetWalletForUser(userId string) (*dax.Wallet, error)
-	DeleteWalletForUser(userId string) error
+	DeleteWalletForUser(userId string) (int64, error)
 	GetWalletIdForUser(userId string) (*string, error)
 	AddFundsToWallet(id string, funds float64) error
 	SubtractFundsFromWallet(id string, funds float64) error
@@ -118,16 +118,22 @@ func (r WalletsRepository) GetWalletForUser(userId string) (*dax.Wallet, error) 
 
 }
 
-func (r WalletsRepository) DeleteWalletForUser(userId string) error {
+func (r WalletsRepository) DeleteWalletForUser(userId string) (int64, error) {
 
 	query := "DELETE FROM Wallets WHERE userId = ?"
 
-	_, err := r.DbContext.SqlDb.Exec(query, userId)
+	rows, err := r.DbContext.SqlDb.Exec(query, userId)
 	if err != nil {
-		return fmt.Errorf("error deleting wallet entry for user: %w", err)
+		return 0, fmt.Errorf("error deleting wallet entry for user: %w", err)
 	}
 
-	return nil
+	val, err := rows.RowsAffected()
+	if err != nil {
+		fmt.Printf("error reading rows affected for DeleteWalletForUser query: %v", err)
+		return -1, nil
+	}
+
+	return val, nil
 }
 
 func (r WalletsRepository) AddFundsToWallet(id string, funds float64) error {

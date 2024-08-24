@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/interaction"
+	"github.com/RazvanBerbece/AzteMarket/pkg/utils"
+	"github.com/RazvanBerbece/AzteMarket/src/libs/models/dax"
 	logUtils "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger/utils"
 	sharedConfig "github.com/RazvanBerbece/AzteMarket/src/shared/config"
 	sharedRuntime "github.com/RazvanBerbece/AzteMarket/src/shared/runtime"
@@ -13,20 +15,36 @@ import (
 
 func HandleSlashUseItemFromWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	targetWalletId := i.ApplicationCommandData().Options[0].StringValue()
+	receiverId := i.ApplicationCommandData().Options[0].StringValue()
 	itemName := i.ApplicationCommandData().Options[1].StringValue()
 
-	// Block attempts to use items when the target ID is not a valid wallet ID
-	if !strings.Contains(targetWalletId, "@OTA") {
-		interaction.SendErrorEmbedResponse(s, i.Interaction, fmt.Sprintf("Invalid input argument (term: `%s`)", i.ApplicationCommandData().Options[0].Name))
-		return
+	var targetWallet *dax.Wallet
+
+	var receiverUserId string = ""
+	var receiverWalletId string = ""
+	if strings.Contains(receiverId, "@OTA") {
+		// Possibly a wallet ID
+		receiverWalletId = receiverId
+	} else {
+		// Possibly a user ID
+		receiverUserId = utils.GetDiscordIdFromMentionFormat(receiverId)
 	}
 
-	targetWallet, err := sharedRuntime.WalletService.GetWallet(targetWalletId)
-	if err != nil {
-		interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
-		go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
-		return
+	var err error
+	if receiverUserId != "" && receiverWalletId == "" {
+		targetWallet, err = sharedRuntime.WalletService.GetWalletForUser(receiverUserId)
+		if err != nil {
+			interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
+			go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
+			return
+		}
+	} else if receiverUserId == "" && receiverWalletId != "" {
+		targetWallet, err = sharedRuntime.WalletService.GetWallet(receiverWalletId)
+		if err != nil {
+			interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
+			go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
+			return
+		}
 	}
 
 	targetUser, err := sharedRuntime.UserService.GetUser(targetWallet.UserId)
@@ -43,7 +61,7 @@ func HandleSlashUseItemFromWallet(s *discordgo.Session, i *discordgo.Interaction
 		return
 	}
 
-	err = sharedRuntime.WalletService.ConsumeItemForUser(targetUser.DiscordTag, targetWalletId, targetItem.Id)
+	err = sharedRuntime.WalletService.ConsumeItemForUser(targetUser.DiscordTag, targetWallet.Id, targetItem.Id)
 	if err != nil {
 		interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
 		go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())
