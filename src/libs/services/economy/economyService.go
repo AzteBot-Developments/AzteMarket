@@ -2,6 +2,7 @@ package economy
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/dax"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/events"
@@ -40,7 +41,7 @@ func (s EconomyService) GetCurrencyStateForGuild(guildId string) (*dax.CurrencyS
 
 func (s EconomyService) ReplenishCurrencyForGuild(guildId string, currencyAmount float64) error {
 
-	err := s.CurrencySystemStateRepositoryRepository.ReplenishCurrencyForGuild(guildId, currencyAmount)
+	err := s.CurrencySystemStateRepositoryRepository.ReplenishCurrencyForGuild(guildId, currencyAmount, time.Now().Unix())
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
 		return fmt.Errorf("failed to replenish currency for guild `%s`", guildId)

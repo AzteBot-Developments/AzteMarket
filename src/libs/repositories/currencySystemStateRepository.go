@@ -14,7 +14,7 @@ type DbCurrencySystemStateRepositoryRepository interface {
 		dateOfLastReplenish int64,
 	) (*dax.CurrencySystemState, error)
 	GetCurrencyStateForGuild(guildId string) (*dax.CurrencySystemState, error)
-	ReplenishCurrencyForGuild(guildId string, currencyAmount float64) error
+	ReplenishCurrencyForGuild(guildId string, currencyAmount float64, timestamp int64) error
 	DeallocateFlowingCurrencyForGuild(guildId string, currencyAmount float64) error
 	AllocateFlowingCurrencyForGuild(guildId string, currencyAmount float64) error
 	DeleteCurrencySystem(guildId string) error
@@ -84,18 +84,19 @@ func (r CurrencySystemStateRepositoryRepository) DeleteCurrencySystem(guildId st
 
 }
 
-func (r CurrencySystemStateRepositoryRepository) ReplenishCurrencyForGuild(guildId string, currencyAmount float64) error {
+func (r CurrencySystemStateRepositoryRepository) ReplenishCurrencyForGuild(guildId string, currencyAmount float64, timestamp int64) error {
 
 	stmt, err := r.DbContext.SqlDb.Prepare(`
 	UPDATE CurrencySystemState SET 
-		totalCurrencyAvailable = totalCurrencyAvailable + ?
+		totalCurrencyAvailable = totalCurrencyAvailable + ?,
+		dateOfLastReplenish = ?
 	WHERE guildId = ?`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(currencyAmount, guildId)
+	_, err = stmt.Exec(currencyAmount, timestamp, guildId)
 	if err != nil {
 		return err
 	}
