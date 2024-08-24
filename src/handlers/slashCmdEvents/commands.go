@@ -17,6 +17,9 @@ var ItemNameMaxLength = 128
 
 var MultiplierMinValue = 1.0
 
+// Default permissions
+var AdminMemberPermissions int64 = discordgo.PermissionAdministrator
+
 var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 	{
 		Name:        "ping",
@@ -238,6 +241,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 				Required:    true,
 			},
 		},
+		DefaultMemberPermissions: &AdminMemberPermissions,
 	},
 	{
 		Name:        "economy-replenish",
@@ -250,6 +254,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 				Required:    true,
 			},
 		},
+		DefaultMemberPermissions: &AdminMemberPermissions,
 	},
 }
 
