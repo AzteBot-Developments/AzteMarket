@@ -39,7 +39,7 @@ func HandleSlashViewEconomy(s *discordgo.Session, i *discordgo.InteractionCreate
 		SetColor(sharedConfig.EmbedColorCode).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		AddLineBreakField().
-		AddField("Amount of Fund Available", fmt.Sprintf("`%.2f` %s", economy.TotalCurrencyAvailable, economy.CurrencyName), false).
+		AddField("Total Amount of Funds Available", fmt.Sprintf("`%.2f` %s", economy.TotalCurrencyAvailable, economy.CurrencyName), false).
 		AddField("Amount of Funds In-Flow", fmt.Sprintf("`%.2f` %s", economy.TotalCurrencyInFlow, economy.CurrencyName), false).
 		AddField("Timestamp of Last Replenishment", fmt.Sprintf("`%s`", utils.FormatUnixAsString(economy.DateOfLastReplenish, "Mon, 02 Jan 2006 15:04:05 MST")), false)
 
