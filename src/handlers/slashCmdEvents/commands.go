@@ -239,6 +239,18 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "economy-replenish",
+		Description: "Replenishes the current guild's available global currency.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "amount",
+				Description: "The total amount of available currency to be added to the economy",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -260,4 +272,5 @@ var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *di
 	"wallet-use-item":     slashCmdWalletHandlers.HandleSlashUseItemFromWallet,
 	"economy":             slashCmdEconomyHandlers.HandleSlashViewEconomy,
 	"economy-create":      slashCmdEconomyHandlers.HandleSlashCreateEconomy,
+	"economy-replenish":   slashCmdEconomyHandlers.HandleSlashReplenishEconomy,
 }
