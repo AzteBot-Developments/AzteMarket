@@ -5,6 +5,7 @@ import (
 
 	"github.com/RazvanBerbece/AzteMarket/pkg/embed"
 	"github.com/RazvanBerbece/AzteMarket/pkg/interaction"
+	"github.com/RazvanBerbece/AzteMarket/pkg/utils"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/events"
 	sharedConfig "github.com/RazvanBerbece/AzteMarket/src/shared/config"
 	sharedRuntime "github.com/RazvanBerbece/AzteMarket/src/shared/runtime"
@@ -40,7 +41,7 @@ func HandleSlashViewEconomy(s *discordgo.Session, i *discordgo.InteractionCreate
 		AddLineBreakField().
 		AddField("Globally Allocated Amount of Funds", fmt.Sprintf("`%.2f` %s", economy.TotalCurrencyAvailable, economy.CurrencyName), false).
 		AddField("Amount of Funds In-Flow", fmt.Sprintf("`%.2f` %s", economy.TotalCurrencyInFlow, economy.CurrencyName), false).
-		AddField("Timestamp of Last Replenishment", fmt.Sprintf("`%d`", economy.DateOfLastReplenish), false)
+		AddField("Timestamp of Last Replenishment", utils.FormatUnixAsString(economy.DateOfLastReplenish, "Mon, 02 Jan 2006 15:04:05 MST"), false)
 
 	sharedRuntime.ComplexResponsesChannel <- events.ComplexResponseEvent{
 		Interaction: i.Interaction,
