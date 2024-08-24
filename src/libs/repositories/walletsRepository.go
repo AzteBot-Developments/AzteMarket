@@ -233,13 +233,21 @@ func (r WalletsRepository) RemoveItemFromWallet(id string, itemId string) error 
 	inventoryString := inventory
 	ownedItemIds := strings.Split(inventoryString, ",")
 	usedItemCount := 0
-	for _, id := range ownedItemIds {
+	for idx, id := range ownedItemIds {
 		if id != itemId {
-			updatedInventory += fmt.Sprintf("%s,", id)
+			if idx < len(ownedItemIds)-1 {
+				updatedInventory += fmt.Sprintf("%s,", id)
+			} else {
+				updatedInventory += id
+			}
 		} else if id == itemId {
 			if usedItemCount >= 1 {
 				// don't use further items of the same type, so add them to the updated inventory
-				updatedInventory += fmt.Sprintf("%s,", id)
+				if idx < len(ownedItemIds)-1 {
+					updatedInventory += fmt.Sprintf("%s,", id)
+				} else {
+					updatedInventory += id
+				}
 			} else {
 				// count as used and don't add to updated inventory
 				usedItemCount++
