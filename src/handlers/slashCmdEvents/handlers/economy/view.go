@@ -41,7 +41,7 @@ func HandleSlashViewEconomy(s *discordgo.Session, i *discordgo.InteractionCreate
 		AddLineBreakField().
 		AddField("Globally Allocated Amount of Funds", fmt.Sprintf("`%.2f` %s", economy.TotalCurrencyAvailable, economy.CurrencyName), false).
 		AddField("Amount of Funds In-Flow", fmt.Sprintf("`%.2f` %s", economy.TotalCurrencyInFlow, economy.CurrencyName), false).
-		AddField("Timestamp of Last Replenishment", utils.FormatUnixAsString(economy.DateOfLastReplenish, "Mon, 02 Jan 2006 15:04:05 MST"), false)
+		AddField("Timestamp of Last Replenishment", fmt.Sprintf("`%s`", utils.FormatUnixAsString(economy.DateOfLastReplenish, "Mon, 02 Jan 2006 15:04:05 MST")), false)
 
 	sharedRuntime.ComplexResponsesChannel <- events.ComplexResponseEvent{
 		Interaction: i.Interaction,
