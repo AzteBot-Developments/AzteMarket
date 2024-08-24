@@ -104,11 +104,13 @@ func (r StockRepository) AddStockItem(stockItemDisplayName string, stockItemDeta
 
 }
 
+// Note: In descending order on price.
+// TODO: Could parameterise this.
 func (r StockRepository) GetAllItems() ([]dax.StockItem, error) {
 
 	var items []dax.StockItem
 
-	rows, err := r.DbContext.SqlDb.Query("SELECT * FROM Stock")
+	rows, err := r.DbContext.SqlDb.Query("SELECT * FROM Stock ORDER BY cost DESC")
 	if err != nil {
 		return nil, fmt.Errorf("an error ocurred while retrieving all items: %v", err)
 	}
