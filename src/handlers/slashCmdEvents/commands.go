@@ -1,6 +1,7 @@
 package slashCmdEvents
 
 import (
+	slashCmdEconomyHandlers "github.com/RazvanBerbece/AzteMarket/src/handlers/slashCmdEvents/handlers/economy"
 	slashCmdMarketHandlers "github.com/RazvanBerbece/AzteMarket/src/handlers/slashCmdEvents/handlers/market"
 	slashCmdUtilHandlers "github.com/RazvanBerbece/AzteMarket/src/handlers/slashCmdEvents/handlers/utils"
 	slashCmdWalletHandlers "github.com/RazvanBerbece/AzteMarket/src/handlers/slashCmdEvents/handlers/wallet"
@@ -177,7 +178,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
 				Name:        "id",
-				Description: "The wallet / user ID to send the funds to.",
+				Description: "The wallet / user ID to send the funds to",
 				Required:    true,
 			},
 			{
@@ -203,7 +204,7 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
 				Name:        "id",
-				Description: "The wallet / user ID from which to use the item.",
+				Description: "The wallet / user ID from which to use the item",
 				Required:    true,
 			},
 			{
@@ -213,6 +214,28 @@ var DefinedSlashCommands = []*discordgo.ApplicationCommand{
 				Required:    true,
 				MinLength:   &ItemNameMinLength,
 				MaxLength:   ItemNameMaxLength,
+			},
+		},
+	},
+	{
+		Name:        "economy",
+		Description: "A high-level view of the current guild's economy related to the available currency.",
+	},
+	{
+		Name:        "economy-create",
+		Description: "Creates an economic currency system for the current guild.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "currency-name",
+				Description: "The name of the currency to use in the guild",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "total-available",
+				Description: "The total amount of currency available to be owned by users",
+				Required:    true,
 			},
 		},
 	},
@@ -235,4 +258,6 @@ var RegisteredSlashCommandHandlers = map[string]func(s *discordgo.Session, i *di
 	"wallet-delete":       slashCmdWalletHandlers.HandleSlashDeleteWallet,
 	"wallet-send-funds":   slashCmdWalletHandlers.HandleSlashSendFundsFromWallet,
 	"wallet-use-item":     slashCmdWalletHandlers.HandleSlashUseItemFromWallet,
+	"economy":             slashCmdEconomyHandlers.HandleSlashViewEconomy,
+	"economy-create":      slashCmdEconomyHandlers.HandleSlashCreateEconomy,
 }

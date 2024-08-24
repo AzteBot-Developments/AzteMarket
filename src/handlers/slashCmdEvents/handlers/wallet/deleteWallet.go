@@ -13,7 +13,7 @@ import (
 func HandleSlashDeleteWallet(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	authorUserId := i.Member.User.ID
-	rowsAffected, err := sharedRuntime.WalletService.DeleteWalletForUser(authorUserId)
+	rowsAffected, err := sharedRuntime.WalletService.DeleteWalletForUser(i.GuildID, authorUserId)
 	if err != nil {
 		interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
 		go logUtils.PublishDiscordLogErrorEvent(sharedRuntime.LogEventsChannel, s, "Debug", sharedConfig.DiscordChannelTopicPairs, err.Error())

@@ -7,6 +7,7 @@ import (
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/dax"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/events"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/repositories"
+	"github.com/RazvanBerbece/AzteMarket/src/libs/services/economy"
 	logUtils "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger/utils"
 )
 
@@ -14,6 +15,8 @@ type MarketplaceService struct {
 	// repos
 	StockRepository   repositories.DbStockRepository
 	WalletsRepository repositories.DbWalletsRepository
+	// services
+	EconomyService economy.EconomyService
 	// log channels
 	ConsoleLogChannel chan events.LogEvent
 }
@@ -84,7 +87,7 @@ func (s MarketplaceService) RemoveItemFromMarket(itemId string) error {
 	return nil
 }
 
-func (s MarketplaceService) BuyItem(buyerUserId string, itemId string) error {
+func (s MarketplaceService) BuyItem(guildId string, buyerUserId string, itemId string) error {
 
 	item, err := s.StockRepository.GetStockItem(itemId)
 	if err != nil {
@@ -104,9 +107,9 @@ func (s MarketplaceService) BuyItem(buyerUserId string, itemId string) error {
 	}
 
 	// Ensure that user has enough funds to buy the item
-	tax := 0.005
-	if buyerWallet.Funds < item.Cost+tax {
-		return fmt.Errorf("cannot buy item `%s` because the buyer's wallet doesn't have enough available funds (available: `%.2f`)", itemId, buyerWallet.Funds)
+	fee := 2.5
+	if buyerWallet.Funds < item.Cost+fee {
+		return fmt.Errorf("cannot buy item `%s` because the buyer's wallet doesn't have enough available funds\nAvailable: `%.2f`; required: `%.2f (item price) + %.2f (processing fee) = %.2f`)", itemId, buyerWallet.Funds, item.Cost, fee, item.Cost+fee)
 	}
 
 	// Only allow a maximum of items of the same ID / name in one's wallet at all times
@@ -124,11 +127,21 @@ func (s MarketplaceService) BuyItem(buyerUserId string, itemId string) error {
 	}
 
 	// Subtract funds
-	// TODO: Could send to server wallet instead ? If I ever get around to doing a server wallet and ICOs
 	err = s.WalletsRepository.SubtractFundsFromWallet(buyerWallet.Id, item.Cost)
 	if err != nil {
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
 		return fmt.Errorf("failed to subtract `%.2f` funds from user with ID `%s`", item.Cost, buyerWallet.UserId)
+	}
+
+	// Move currency from in-flow to globally-available!
+	err = s.EconomyService.DeallocateFlowingCurrencyForGuild(guildId, item.Cost)
+	if err != nil {
+		// Roll back fund subtraction as the deallocation of globally available funds failed
+		err = s.WalletsRepository.AddFundsToWallet(buyerWallet.Id, item.Cost)
+		if err != nil {
+			go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+			return fmt.Errorf("failed to RESTORE `%.2f` funds from user with ID `%s`", item.Cost, buyerWallet.UserId)
+		}
 	}
 
 	// Add item ID to user's inventory

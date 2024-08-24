@@ -60,6 +60,17 @@ func (s EconomyService) AllocateFlowingCurrencyForGuild(guildId string, currency
 	return nil
 }
 
+func (s EconomyService) DeallocateFlowingCurrencyForGuild(guildId string, currencyAmount float64) error {
+
+	err := s.CurrencySystemStateRepositoryRepository.DeallocateFlowingCurrencyForGuild(guildId, currencyAmount)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return fmt.Errorf("failed to deallocate flowing currency for guild `%s`", guildId)
+	}
+
+	return nil
+}
+
 func (s EconomyService) DeleteCurrencySystem(guildId string) error {
 
 	err := s.CurrencySystemStateRepositoryRepository.DeleteCurrencySystem(guildId)

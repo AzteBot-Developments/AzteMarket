@@ -36,7 +36,7 @@ func HandleSlashBuyItem(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	err = sharedRuntime.MarketplaceService.BuyItem(buyerId, itemId)
+	err = sharedRuntime.MarketplaceService.BuyItem(i.GuildID, buyerId, itemId)
 	if err != nil {
 		interaction.SendErrorEmbedResponse(s, i.Interaction, err.Error())
 		return

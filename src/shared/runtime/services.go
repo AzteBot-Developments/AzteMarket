@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/RazvanBerbece/AzteMarket/src/libs/repositories"
+	"github.com/RazvanBerbece/AzteMarket/src/libs/services/economy"
 	marketplaceServices "github.com/RazvanBerbece/AzteMarket/src/libs/services/marketplace"
 	userServices "github.com/RazvanBerbece/AzteMarket/src/libs/services/user"
 	walletServices "github.com/RazvanBerbece/AzteMarket/src/libs/services/wallet"
@@ -19,14 +20,21 @@ var UserService = userServices.UserService{
 	ConsoleLogChannel: LogEventsChannel,
 }
 
+var EconomyService = economy.EconomyService{
+	CurrencySystemStateRepositoryRepository: repositories.NewCurrencySystemStateRepositoryRepository(MySqlAztemarketRootConnectionString),
+	ConsoleLogChannel:                       LogEventsChannel,
+}
+
 var MarketplaceService = marketplaceServices.MarketplaceService{
 	StockRepository:   repositories.NewStockRepository(MySqlAztemarketRootConnectionString),
 	WalletsRepository: repositories.NewWalletsRepository(MySqlAztemarketRootConnectionString),
+	EconomyService:    EconomyService,
 	ConsoleLogChannel: LogEventsChannel,
 }
 
 var WalletService = walletServices.WalletService{
 	WalletsRepository: repositories.NewWalletsRepository(MySqlAztemarketRootConnectionString),
 	StockRepository:   repositories.NewStockRepository(MySqlAztemarketRootConnectionString),
+	EconomyService:    EconomyService,
 	ConsoleLogChannel: LogEventsChannel,
 }

@@ -11,6 +11,7 @@ import (
 type DbWalletsRepository interface {
 	GetWallet(id string) (*dax.Wallet, error)
 	CreateWalletForUser(userId string) (*dax.Wallet, error)
+	RestoreWallet(wallet dax.Wallet) error
 	GetWalletForUser(userId string) (*dax.Wallet, error)
 	DeleteWalletForUser(userId string) (int64, error)
 	GetWalletIdForUser(userId string) (*string, error)
@@ -61,6 +62,31 @@ func (r WalletsRepository) CreateWalletForUser(userId string) (*dax.Wallet, erro
 	}
 
 	return wallet, nil
+
+}
+
+func (r WalletsRepository) RestoreWallet(wallet dax.Wallet) error {
+
+	stmt, err := r.DbContext.SqlDb.Prepare(`
+		INSERT INTO 
+			Wallets(
+				id, 
+				userId, 
+				funds,
+				inventory
+			)
+		VALUES(?, ?, ?, ?);`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(wallet.Id, wallet.UserId, wallet.Funds, wallet.Inventory)
+	if err != nil {
+		return err
+	}
+
+	return nil
 
 }
 

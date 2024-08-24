@@ -10,6 +10,7 @@ import (
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/dax"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/models/events"
 	"github.com/RazvanBerbece/AzteMarket/src/libs/repositories"
+	"github.com/RazvanBerbece/AzteMarket/src/libs/services/economy"
 	logUtils "github.com/RazvanBerbece/AzteMarket/src/libs/services/logger/utils"
 	sharedConfig "github.com/RazvanBerbece/AzteMarket/src/shared/config"
 	"github.com/bwmarrin/discordgo"
@@ -19,6 +20,8 @@ type WalletService struct {
 	// repos
 	WalletsRepository repositories.DbWalletsRepository
 	StockRepository   repositories.DbStockRepository
+	// services
+	EconomyService economy.EconomyService
 	// log channels
 	ConsoleLogChannel chan events.LogEvent
 }
@@ -59,10 +62,29 @@ func (s WalletService) GetWalletForUser(userId string) (*dax.Wallet, error) {
 
 }
 
-func (s WalletService) DeleteWalletForUser(userId string) (int64, error) {
+func (s WalletService) DeleteWalletForUser(guildId string, userId string) (int64, error) {
+
+	wallet, err := s.WalletsRepository.GetWalletForUser(userId)
+	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return 0, err
+	}
 
 	rowsAffected, err := s.WalletsRepository.DeleteWalletForUser(userId)
 	if err != nil {
+		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
+		return rowsAffected, err
+	}
+
+	err = s.EconomyService.DeallocateFlowingCurrencyForGuild(guildId, wallet.Funds)
+	if err != nil {
+		// Roll back wallet deletion as the deallocation of globally available funds failed
+		// hence blocking the available funds in the wallet
+		rollbackErr := s.WalletsRepository.RestoreWallet(*wallet)
+		if rollbackErr != nil {
+			go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, rollbackErr.Error())
+			return 0, fmt.Errorf("failed to RESTORE wallet for user with ID `%s` (original: `%v`)", userId, err)
+		}
 		go logUtils.PublishConsoleLogErrorEvent(s.ConsoleLogChannel, err.Error())
 		return rowsAffected, err
 	}
