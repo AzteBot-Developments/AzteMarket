@@ -68,8 +68,6 @@ func UserHasEnoughPermissionsForCommand(s *discordgo.Session,
 	staffRoles []string,
 	staffCommands []string) bool {
 
-	var hasRequiredPerms bool = false
-
 	isHigherStaffCommand := utils.StringInSlice(commandName, higherStaffCommands)
 	isStaffCommand := utils.StringInSlice(commandName, staffCommands)
 
@@ -86,7 +84,6 @@ func UserHasEnoughPermissionsForCommand(s *discordgo.Session,
 				return false
 			}
 			if utils.StringInSlice(authorDiscordRole.Name, higherStaffRoles) {
-				hasRequiredPerms = true
 				return true
 			}
 		}
@@ -103,6 +100,6 @@ func UserHasEnoughPermissionsForCommand(s *discordgo.Session,
 		}
 	}
 
-	return hasRequiredPerms
+	return false
 
 }
